@@ -127,7 +127,6 @@ class RoleService implements RoleServiceInterface
 
         // Memperbarui role
         $role = $this->repository->updateRole($id, $data);
-
         // Sinkronisasi permissions
         if (!empty($permissions)) {
             $role->syncPermissions($permissions);

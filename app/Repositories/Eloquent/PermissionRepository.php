@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Eloquent;
 
+use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Permission;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 
 class PermissionRepository implements PermissionRepositoryInterface

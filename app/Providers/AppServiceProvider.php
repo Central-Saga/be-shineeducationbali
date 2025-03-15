@@ -8,14 +8,30 @@ use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\Implementations\RoleService;
 use App\Services\Implementations\UserService;
+use App\Repositories\Eloquent\SubjectRepository;
 use App\Services\Contracts\RoleServiceInterface;
 use App\Services\Contracts\UserServiceInterface;
+use App\Services\Implementations\SubjectService;
+use App\Repositories\Eloquent\ClassTypeRepository;
+use App\Services\Implementations\ClassTypeService;
 use App\Repositories\Eloquent\PermissionRepository;
+use App\Services\Contracts\SubjectServiceInterface;
 use App\Services\Implementations\PermissionService;
+use App\Services\Contracts\ClassTypeServiceInterface;
 use App\Services\Contracts\PermissionServiceInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Eloquent\EducationLevelRepository;
+use App\Services\Implementations\EducationLevelService;
+use App\Repositories\Eloquent\MeetingFrequencyRepository;
+use App\Services\Implementations\MeetingFrequencyService;
+use App\Repositories\Contracts\SubjectRepositoryInterface;
+use App\Services\Contracts\EducationLevelServiceInterface;
+use App\Repositories\Contracts\ClassTypeRepositoryInterface;
+use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
+use App\Repositories\Contracts\EducationLevelRepositoryInterface;
+use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +51,22 @@ class AppServiceProvider extends ServiceProvider
         // Binding Permission
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
         $this->app->bind(PermissionServiceInterface::class, PermissionService::class);
+
+        // Binding Education Level
+        $this->app->bind(EducationLevelRepositoryInterface::class, EducationLevelRepository::class);
+        $this->app->bind(EducationLevelServiceInterface::class, EducationLevelService::class);
+
+        // Binding Meeting Frequency
+        $this->app->bind(MeetingFrequencyRepositoryInterface::class, MeetingFrequencyRepository::class);
+        $this->app->bind(MeetingFrequencyServiceInterface::class, MeetingFrequencyService::class);
+
+        // Binding Subject
+        $this->app->bind(SubjectRepositoryInterface::class, SubjectRepository::class);
+        $this->app->bind(SubjectServiceInterface::class, SubjectService::class);
+
+        // Binding Class Type
+        $this->app->bind(ClassTypeRepositoryInterface::class, ClassTypeRepository::class);
+        $this->app->bind(ClassTypeServiceInterface::class, ClassTypeService::class);
     }
 
     /**

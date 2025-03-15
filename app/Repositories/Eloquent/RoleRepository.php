@@ -2,6 +2,9 @@
 
 namespace App\Repositories\Eloquent;
 
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 
 class RoleRepository implements RoleRepositoryInterface
@@ -33,7 +36,7 @@ class RoleRepository implements RoleRepositoryInterface
     {
         try {
             // Mengambil role berdasarkan ID, handle jika tidak ditemukan
-            return $this->model->findOrFail($id);
+            return $this->model->with('permissions')->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             Log::error("Role with ID {$id} not found.");
             return null;
@@ -48,7 +51,7 @@ class RoleRepository implements RoleRepositoryInterface
      */
     public function getRoleByName($name)
     {
-        return $this->model->where('name', $name)->first();
+        return $this->model->where('name', $name)->with('permissions')->first();
     }
 
     /**
@@ -59,7 +62,7 @@ class RoleRepository implements RoleRepositoryInterface
      */
     public function getRoleByStatus($status)
     {
-        return $this->model->where('status', $status)->get();
+        return $this->model->where('status', $status)->with('permissions')->get();
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\UserRepositoryInterface;
 
 class UserRepository implements UserRepositoryInterface
@@ -20,7 +22,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getAllUsers()
     {
-        return $this->model->all();
+        return $this->model->with('roles')->get();
     }
 
     /**
