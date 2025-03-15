@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\EducationLevel;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 
 class EducationLevelRepository implements EducationLevelRepositoryInterface

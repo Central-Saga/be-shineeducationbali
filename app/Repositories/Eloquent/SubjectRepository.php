@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\Subject;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\SubjectRepositoryInterface;
 
 class SubjectRepository implements SubjectRepositoryInterface

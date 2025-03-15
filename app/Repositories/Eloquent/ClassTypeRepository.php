@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\ClassType;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\ClassTypeRepositoryInterface;
 
 class ClassTypeRepository implements ClassTypeRepositoryInterface

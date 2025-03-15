@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Eloquent;
 
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 
 class RoleRepository implements RoleRepositoryInterface

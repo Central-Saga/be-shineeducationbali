@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\MeetingFrequency;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
 
 class MeetingFrequencyRepository implements MeetingFrequencyRepositoryInterface
