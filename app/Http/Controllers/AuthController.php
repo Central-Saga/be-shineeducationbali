@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -34,7 +36,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth-token', ['*'], Carbon::now()->addDay())->plainTextToken; // Token valid 24 jam
 
         return response()->json([
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token,
             'message' => 'Login berhasil',
         ], 200);
@@ -56,11 +58,14 @@ class AuthController extends Controller
             'status' => 'Aktif',
         ]);
 
+        $user->assignRole('Student');
+
         $tokenResult = $user->createToken('auth-token')->plainTextToken;
-        $token = $user->createToken('auth-token', ['*'], Carbon::now()->addDay())->plainTextToken; // Token valid 24 jam
+        $token = $user->createToken('auth-token', ['*'], Carbon::now()->addDay())->plainTextToken;
+        // Token valid 24 jam
 
         return response()->json([
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token,
             'message' => 'Registrasi berhasil',
         ], 201);
@@ -71,7 +76,12 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(null, 204); // No content, seperti Breeze
+        return response()->json(
+            [
+                'message' => 'Logout berhasil',
+            ],
+            204
+        ); // No content, seperti Breeze
     }
 
     // Mengirim email reset password (mirip Breeze)
