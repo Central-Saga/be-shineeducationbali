@@ -102,7 +102,7 @@ class UserService implements UserServiceInterface
         $user = $this->repository->createUser($data);
 
         // Sinkronisasi permissions
-        if ($role && $user) {
+        if ($user && $role) {
             $user->assignRole($role);
         }
 

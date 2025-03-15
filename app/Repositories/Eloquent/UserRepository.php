@@ -73,7 +73,7 @@ class UserRepository implements UserRepositoryInterface
     public function createUser(array $data)
     {
         try {
-            $this->model->create($data);
+            return $this->model->create($data);
         } catch (\Exception $e) {
             Log::error("Failed to create user: {$e->getMessage()}");
             return null;
