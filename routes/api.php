@@ -5,7 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\ClassTypeController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\EducationLevelController;
+use App\Http\Controllers\MeetingFrequencyController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -29,6 +33,26 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::middleware('permission:mengelola user')->group(function () {
         Route::apiResource('users', UserController::class);
         Route::patch('users/{id}/status', [UserController::class, 'updateStatus']);
+    });
+    // Class Types
+    Route::middleware('permission:mengelola class types')->group(function () {
+        Route::apiResource('class-types', ClassTypeController::class);
+        Route::patch('class-types/{id}/status', [ClassTypeController::class, 'updateStatus']);
+    });
+    // Education Levels
+    Route::middleware('permission:mengelola education levels')->group(function () {
+        Route::apiResource('education-levels', EducationLevelController::class);
+        Route::patch('education-levels/{id}/status', [EducationLevelController::class, 'updateStatus']);
+    });
+    // Meeting Frequencies
+    Route::middleware('permission:mengelola meeting frequencies')->group(function () {
+        Route::apiResource('meeting-frequencies', MeetingFrequencyController::class);
+        Route::patch('meeting-frequencies/{id}/status', [MeetingFrequencyController::class, 'updateStatus']);
+    });
+    // Subjects
+    Route::middleware('permission:mengelola subjects')->group(function () {
+        Route::apiResource('subjects', SubjectController::class);
+        Route::patch('subjects/{id}/status', [SubjectController::class, 'updateStatus']);
     });
 });
 
