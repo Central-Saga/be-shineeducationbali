@@ -81,6 +81,20 @@ class RoleAndPermissionSeeder extends Seeder
         ])->get();
         $admin->givePermissionTo($adminPermissions);
 
+        // For Teacher, assign only specific additional permissions
+        $teacher->givePermissionTo([
+            'mengelola students',
+            'mengelola classes',
+            'mengelola student classes',
+            'mengelola materials',
+            'mengelola student attendances',
+            'mengelola grades',
+            'mengelola certificates',
+            'mengelola articles',
+            'mengelola testimonials',
+            'mengelola assignments',
+        ]);
+
         // For Student, assign only specific additional permissions
         $student->givePermissionTo([
             'melihat students',
