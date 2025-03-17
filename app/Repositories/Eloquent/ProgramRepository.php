@@ -20,7 +20,7 @@ class ProgramRepository implements ProgramRepositoryInterface
      */
     public function getAllPrograms()
     {
-        return $this->model->all();
+        return $this->model->with('educationLevel', 'subject', 'classType', 'meetingFrequency')->get();
     }
 
     /**
@@ -33,7 +33,7 @@ class ProgramRepository implements ProgramRepositoryInterface
     {
         try {
             // Mengambil permission berdasarkan ID, handle jika tidak ditemukan
-            return $this->model->findOrFail($id);
+            return $this->model->with('educationLevel', 'subject', 'classType', 'meetingFrequency')->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             Log::error("Program with ID {$id} not found.");
             return null;
@@ -48,7 +48,7 @@ class ProgramRepository implements ProgramRepositoryInterface
      */
     public function getProgramByName($name)
     {
-        return $this->model->where('name', $name)->first();
+        return $this->model->where('name', $name)->with('educationLevel', 'subject', 'classType', 'meetingFrequency')->first();
     }
 
     /**
@@ -60,7 +60,9 @@ class ProgramRepository implements ProgramRepositoryInterface
     public function createProgram(array $data)
     {
         try {
-            return $this->model->create($data);
+            $program = $this->model->create($data);
+            $program->load('educationLevel', 'subject', 'classType', 'meetingFrequency');
+            return $program;
         } catch (\Exception $e) {
             Log::error("Failed to create program: {$e->getMessage()}");
             return null;
@@ -81,6 +83,7 @@ class ProgramRepository implements ProgramRepositoryInterface
         if ($program) {
             try {
                 $program->update($data);
+                $program->load('educationLevel', 'subject', 'classType', 'meetingFrequency');
                 return $program;
             } catch (\Exception $e) {
                 Log::error("Failed to update program with ID {$id}: {$e->getMessage()}");
@@ -121,7 +124,7 @@ class ProgramRepository implements ProgramRepositoryInterface
     protected function findProgram($id)
     {
         try {
-            return $this->model->findOrFail($id);
+            return $this->model->with('educationLevel', 'subject', 'classType', 'meetingFrequency')->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             Log::error("Program with ID {$id} not found.");
             return null;

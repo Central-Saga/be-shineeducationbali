@@ -20,7 +20,7 @@ class MaterialRepository implements MaterialRepositoryInterface
      */
     public function getAllMaterials()
     {
-        return $this->model->all();
+        return $this->model->with('program')->get();
     }
 
     /**
@@ -33,7 +33,7 @@ class MaterialRepository implements MaterialRepositoryInterface
     {
         try {
             // Mengambil permission berdasarkan ID, handle jika tidak ditemukan
-            return $this->model->findOrFail($id);
+            return $this->model->with('program')->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             Log::error("Material with ID {$id} not found.");
             return null;
@@ -48,7 +48,7 @@ class MaterialRepository implements MaterialRepositoryInterface
      */
     public function getMaterialByName($name)
     {
-        return $this->model->where('name', $name)->first();
+        return $this->model->where('name', $name)->with('program')->first();
     }
 
     /**
@@ -60,7 +60,9 @@ class MaterialRepository implements MaterialRepositoryInterface
     public function createMaterial(array $data)
     {
         try {
-            return $this->model->create($data);
+            $material = $this->model->create($data);
+            $material->load('program');
+            return $material;
         } catch (\Exception $e) {
             Log::error("Failed to create material: {$e->getMessage()}");
             return null;
@@ -81,6 +83,7 @@ class MaterialRepository implements MaterialRepositoryInterface
         if ($material) {
             try {
                 $material->update($data);
+                $material->load('program');
                 return $material;
             } catch (\Exception $e) {
                 Log::error("Failed to update material with ID {$id}: {$e->getMessage()}");
@@ -121,7 +124,7 @@ class MaterialRepository implements MaterialRepositoryInterface
     protected function findMaterial($id)
     {
         try {
-            return $this->model->findOrFail($id);
+            return $this->model->with('program')->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             Log::error("Material with ID {$id} not found.");
             return null;
