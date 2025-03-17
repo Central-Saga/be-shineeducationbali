@@ -8,15 +8,21 @@ use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\Implementations\RoleService;
 use App\Services\Implementations\UserService;
+use App\Repositories\Eloquent\ProgramRepository;
 use App\Repositories\Eloquent\SubjectRepository;
 use App\Services\Contracts\RoleServiceInterface;
 use App\Services\Contracts\UserServiceInterface;
+use App\Services\Implementations\ProgramService;
 use App\Services\Implementations\SubjectService;
+use App\Repositories\Eloquent\MaterialRepository;
+use App\Services\Implementations\MaterialService;
 use App\Repositories\Eloquent\ClassTypeRepository;
 use App\Services\Implementations\ClassTypeService;
 use App\Repositories\Eloquent\PermissionRepository;
+use App\Services\Contracts\ProgramServiceInterface;
 use App\Services\Contracts\SubjectServiceInterface;
 use App\Services\Implementations\PermissionService;
+use App\Services\Contracts\MaterialServiceInterface;
 use App\Services\Contracts\ClassTypeServiceInterface;
 use App\Services\Contracts\PermissionServiceInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
@@ -25,8 +31,10 @@ use App\Repositories\Eloquent\EducationLevelRepository;
 use App\Services\Implementations\EducationLevelService;
 use App\Repositories\Eloquent\MeetingFrequencyRepository;
 use App\Services\Implementations\MeetingFrequencyService;
+use App\Repositories\Contracts\ProgramRepositoryInterface;
 use App\Repositories\Contracts\SubjectRepositoryInterface;
 use App\Services\Contracts\EducationLevelServiceInterface;
+use App\Repositories\Contracts\MaterialRepositoryInterface;
 use App\Repositories\Contracts\ClassTypeRepositoryInterface;
 use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
@@ -67,6 +75,14 @@ class AppServiceProvider extends ServiceProvider
         // Binding Class Type
         $this->app->bind(ClassTypeRepositoryInterface::class, ClassTypeRepository::class);
         $this->app->bind(ClassTypeServiceInterface::class, ClassTypeService::class);
+
+        // Binding Program
+        $this->app->bind(ProgramRepositoryInterface::class, ProgramRepository::class);
+        $this->app->bind(ProgramServiceInterface::class, ProgramService::class);
+
+        // Binding Material
+        $this->app->bind(MaterialRepositoryInterface::class, MaterialRepository::class);
+        $this->app->bind(MaterialServiceInterface::class, MaterialService::class);
     }
 
     /**
