@@ -14,6 +14,7 @@ use App\Http\Controllers\ClassTypeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\EducationLevelController;
 use App\Http\Controllers\MeetingFrequencyController;
+use App\Http\Controllers\StudentController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -72,6 +73,11 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::middleware('permission:mengelola teachers')->group(function () {
         Route::apiResource('teachers', TeacherController::class);
         Route::patch('teachers/{id}/status', [TeacherController::class, 'updateStatus']);
+    });
+    // Students
+    Route::middleware('permission:mengelola studends')->group(function () {
+        Route::apiResource('students', StudentController::class);
+        Route::patch('student/{id}/status', [StudentController::class, 'updateStatus']);
     });
 });
 

@@ -51,4 +51,8 @@ class Program extends Model
     {
         return $this->hasMany(Material::class);
     }
+    public function student()
+    {
+        return $this->hasMany(Material::class);
+    }
 }
