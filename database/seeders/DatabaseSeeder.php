@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             MeetingFrequencySeeder::class,
             ProgramSeeder::class,
             MaterialSeeder::class,
+            TeacherSeeder::class,
         ]);
     }
 }
