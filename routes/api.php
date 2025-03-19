@@ -1,11 +1,13 @@
 <?php
 
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ClassTypeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\EducationLevelController;
@@ -54,6 +56,12 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
         Route::apiResource('subjects', SubjectController::class);
         Route::patch('subjects/{id}/status', [SubjectController::class, 'updateStatus']);
     });
+    // Teachers
+    Route::middleware('permission:mengelola teachers')->group(function () {
+        Route::apiResource('teachers', TeacherController::class);
+        Route::patch('teachers/{id}/status', [TeacherController::class, 'updateStatus']);
+    });
+
 });
 
 Route::get('/user', function (Request $request) {

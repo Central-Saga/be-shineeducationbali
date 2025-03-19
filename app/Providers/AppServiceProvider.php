@@ -32,6 +32,10 @@ use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
+use App\Repositories\Contracts\TeacherRepositoryInterface;
+use App\Repositories\Eloquent\TeacherRepository;
+use App\Services\Contracts\TeacherServiceInterface;
+use App\Services\Implementations\TeacherService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -67,6 +71,10 @@ class AppServiceProvider extends ServiceProvider
         // Binding Class Type
         $this->app->bind(ClassTypeRepositoryInterface::class, ClassTypeRepository::class);
         $this->app->bind(ClassTypeServiceInterface::class, ClassTypeService::class);
+
+        // Binding Teacher
+        $this->app->bind(TeacherRepositoryInterface::class, TeacherRepository::class);
+        $this->app->bind(TeacherServiceInterface::class, TeacherService::class);
     }
 
     /**

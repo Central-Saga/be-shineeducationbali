@@ -2,6 +2,7 @@
 
 namespace App\Services\Implementations;
 
+use Illuminate\Support\Facades\Cache;
 use App\Services\Contracts\ClassTypeServiceInterface;
 use App\Repositories\Contracts\ClassTypeRepositoryInterface;
 
@@ -47,7 +48,7 @@ class ClassTypeService implements ClassTypeServiceInterface
      */
     public function getClassTypeByName($name)
     {
-        return $this->repository->getClassTypeName($name);
+        return $this->repository->getClassTypeByName($name);
     }
 
     /**
