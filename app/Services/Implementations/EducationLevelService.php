@@ -2,6 +2,7 @@
 
 namespace App\Services\Implementations;
 
+use Illuminate\Support\Facades\Cache;
 use App\Services\Contracts\EducationLevelServiceInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 
