@@ -2,6 +2,7 @@
 
 namespace App\Services\Implementations;
 
+use Illuminate\Support\Facades\Cache;
 use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
 

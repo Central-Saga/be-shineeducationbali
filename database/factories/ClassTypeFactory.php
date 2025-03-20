@@ -18,7 +18,7 @@ class ClassTypeFactory extends Factory
     {
         return [
             'class_type_name' => fake()->word(),
-            'student_count' => fake()->randomElemnt(["1", "2", ">6"])
+            'student_count' => fake()->randomElement(["1", "2", ">6"])
         ];
     }
 }
