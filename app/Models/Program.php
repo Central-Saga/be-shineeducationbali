@@ -55,4 +55,9 @@ class Program extends Model
     {
         return $this->hasMany(Material::class);
     }
+
+    public function gradeCategories()
+    {
+        return $this->hasMany(GradeCategory::class, 'program_id');
+    }
 }

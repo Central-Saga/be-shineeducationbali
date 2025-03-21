@@ -16,7 +16,6 @@ use App\Repositories\Eloquent\TeacherRepository;
 use App\Services\Contracts\RoleServiceInterface;
 use App\Services\Contracts\UserServiceInterface;
 use App\Services\Implementations\ProgramService;
-use App\Services\Implementations\StudentService;
 use App\Services\Implementations\SubjectService;
 use App\Services\Implementations\TeacherService;
 use App\Repositories\Eloquent\MaterialRepository;
@@ -48,7 +47,12 @@ use App\Repositories\Contracts\ClassTypeRepositoryInterface;
 use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
+use App\Repositories\Contracts\GradeCategoryRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
+use App\Repositories\Eloquent\GradeCategoryRepository;
+use App\Services\Contracts\GradeCategoryServiceInterface;
+use App\Services\Implementations\GradeCategoryService;
+use App\Services\StudentService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -99,7 +103,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Binding Student
         $this->app->bind(StudentRepositoryInterface::class, StudentRepository::class);
-    $this->app->bind(StudentServiceInterface::class, StudentService::class);
+        $this->app->bind(StudentServiceInterface::class, StudentService::class);
+
+        // Bindding Grade Categories
+        $this->app->bind(GradeCategoryRepositoryInterface::class, GradeCategoryRepository::class);
+        $this->app->bind(GradeCategoryServiceInterface::class, GradeCategoryService::class);
     }
 
     /**
