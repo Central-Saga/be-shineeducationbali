@@ -4,6 +4,7 @@ use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProgramController;
@@ -83,6 +84,10 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     // Grade Category
     Route::middleware('permission:mengelola grade categories')->group(function () {
         Route::apiResource('grade-categories', GradeCategoryController::class);
+    });
+    // Certificates
+    Route::middleware('permission:mengelola certificates')->group(function () {
+    Route::apiResource('certificates', CertificateController::class);
     });
 });
 

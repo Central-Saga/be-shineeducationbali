@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Student;
+use App\Repositories\Contracts\CertificateRepositoryInterface;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\RoleRepository;
@@ -49,8 +50,11 @@ use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\GradeCategoryRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
+use App\Repositories\Eloquent\CertificateRepository;
 use App\Repositories\Eloquent\GradeCategoryRepository;
+use App\Services\Contracts\CertificateServiceInterface;
 use App\Services\Contracts\GradeCategoryServiceInterface;
+use App\Services\Implementations\CertificateService;
 use App\Services\Implementations\GradeCategoryService;
 use App\Services\StudentService;
 
@@ -107,7 +111,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Bindding Grade Categories
         $this->app->bind(GradeCategoryRepositoryInterface::class, GradeCategoryRepository::class);
-        $this->app->bind(GradeCategoryServiceInterface::class, GradeCategoryService::class);
+        $this->app->bind(GradeCategoryServiceInterface::class, GradeCategoryServicefe::class);
+
+        // Binding Certificate
+        $this->app->bind(CertificateRepositoryInterface::class, CertificateRepository::class);
+        $this->app->bind(CertificateServiceInterface::class, CertificateService::class);
     }
 
     /**

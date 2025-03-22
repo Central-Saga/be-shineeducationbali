@@ -17,15 +17,13 @@ class GradeCategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'program_id' => $this->program_id,
-            'program' => $this->whenLoaded('program', fn () => [
-                'id' => $this->program->id,
-                'program_name' => $this->program->program_name,
-                'sku' => $this->program->sku,   
-            ]),
+            'student_id' => $this->student_id,
+            'program' => new ProgramResource($this->whenLoaded('program')), // Include program relationship
+            'student' => new StudentResource($this->whenLoaded('student')), // Include student relationship
             'category_name' => $this->category_name,
             'description' => $this->description,
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString(),
+            'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
+            'updated_at' => $this->updated_at ? $this->updated_at->toDateTimeString() : null,
         ];
     }
 }
