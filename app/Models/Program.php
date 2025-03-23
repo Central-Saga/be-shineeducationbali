@@ -55,4 +55,9 @@ class Program extends Model
     {
         return $this->hasMany(Material::class);
     }
+
+    public function classRooms()
+    {
+        return $this->hasMany(ClassRoom::class);
+    }
 }

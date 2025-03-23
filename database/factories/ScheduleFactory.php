@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ClassRoom;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class ScheduleFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'class_room_id' => ClassRoom::all()->random()->id,
+            'day' => fake()->randomElement(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']),
+            'start_time' => fake()->time(),
+            'end_time' => fake()->time(),
         ];
     }
 }
