@@ -107,6 +107,20 @@ class ClassRoomController extends Controller
         }
     }
 
+    public function updateStatus(string $id, Request $request)
+    {
+        $request->validate([
+            'status' => 'required|in:Aktif,Non Aktif',
+        ]);
+
+        $classRoom = $this->classRoomService->updateClassRoomStatus($id, $request->validated());
+
+        if (!$classRoom) {
+            return response()->json(['message' => 'Failed to update classroom status'], 404);
+        }
+        return new ClassRoomResource($classRoom);
+    }
+
     /**
      * Menambahkan siswa ke classroom
      */
