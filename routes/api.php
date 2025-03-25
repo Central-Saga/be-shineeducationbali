@@ -13,6 +13,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ClassTypeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\EducationLevelController;
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\MeetingFrequencyController;
 use App\Http\Controllers\StudentController;
 
@@ -78,6 +79,11 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::middleware('permission:mengelola studends')->group(function () {
         Route::apiResource('students', StudentController::class);
         Route::patch('student/{id}/status', [StudentController::class, 'updateStatus']);
+    });
+    // Leaves
+    Route::middleware('permission:mengelola leaves')->group(function () {
+        Route::apiResource('leaves', LeaveController::class);
+        Route::patch('leaves/{id}/status', [LeaveController::class, 'updateStatus']);
     });
 });
 

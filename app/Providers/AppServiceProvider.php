@@ -49,6 +49,11 @@ use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
+use App\Repositories\LeaveRepository;
+use App\Repositories\LeaveRepositoryInterface;
+use App\Services\LeaveService;
+use App\Services\LeaveServiceInterface;
+use App\Services\StudentService as ServicesStudentService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -99,7 +104,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Binding Student
         $this->app->bind(StudentRepositoryInterface::class, StudentRepository::class);
-    $this->app->bind(StudentServiceInterface::class, StudentService::class);
+        $this->app->bind(StudentServiceInterface::class, StudentService::class);
+
+        // Binding Leave
+        $this->app->bind(LeaveRepositoryInterface::class, LeaveRepository::class);
+        $this->app->bind(LeaveServiceInterface::class, LeaveService::class);
     }
 
     /**
