@@ -13,6 +13,8 @@ class ClassRoomService implements ClassRoomServiceInterface
     protected $studentService;
 
     const CLASS_ROOMS_ALL_CACHE_KEY = 'class_rooms.all';
+    const CLASS_ROOMS_ACTIVE_CACHE_KEY = 'class_rooms.active';
+    const CLASS_ROOMS_INACTIVE_CACHE_KEY = 'class_rooms.inactive';
 
     public function __construct(
         ClassRoomRepositoryInterface $repository,
@@ -53,6 +55,41 @@ class ClassRoomService implements ClassRoomServiceInterface
     public function getClassRoomByName($name)
     {
         return $this->repository->getClassRoomByName($name);
+    }
+
+    /**
+     * Mengambil class room berdasarkan status.
+     *
+     * @param string $status
+     * @return mixed
+     */
+    public function getClassRoomByStatus($status)
+    {
+        return $this->repository->getClassRoomByStatus($status);
+    }
+
+    /**
+     * Mengambil class room berdasarkan status Aktif.
+     *
+     * @return mixed
+     */
+    public function getClassRoomByActive()
+    {
+        return Cache::remember(self::CLASS_ROOMS_ACTIVE_CACHE_KEY, 3600, function () {
+            return $this->repository->getClassRoomByActive();
+        });
+    }
+
+    /**
+     * Mengambil class room berdasarkan status Tidak Aktif.
+     *
+     * @return mixed
+     */
+    public function getClassRoomByInactive()
+    {
+        return Cache::remember(self::CLASS_ROOMS_INACTIVE_CACHE_KEY, 3600, function () {
+            return $this->repository->getClassRoomByInactive();
+        });
     }
 
     /**
@@ -104,6 +141,8 @@ class ClassRoomService implements ClassRoomServiceInterface
     public function clearClassRoomCaches()
     {
         Cache::forget(self::CLASS_ROOMS_ALL_CACHE_KEY);
+        Cache::forget(self::CLASS_ROOMS_ACTIVE_CACHE_KEY);
+        Cache::forget(self::CLASS_ROOMS_INACTIVE_CACHE_KEY);
     }
 
     /**

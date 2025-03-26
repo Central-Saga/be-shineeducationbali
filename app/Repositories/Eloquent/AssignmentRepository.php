@@ -54,6 +54,17 @@ class AssignmentRepository implements AssignmentRepositoryInterface
     }
 
     /**
+     * Mengambil assignment berdasarkan status.
+     *
+     * @param string $status
+     * @return mixed
+     */
+    public function getAssignmentByStatus($status)
+    {
+        return $this->model->with('classRoom')->where('status', $status)->get();
+    }
+
+    /**
      * Membuat assignment baru.
      *
      * @param array $data

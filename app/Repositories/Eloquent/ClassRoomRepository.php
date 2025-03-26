@@ -54,6 +54,17 @@ class ClassRoomRepository implements ClassRoomRepositoryInterface
     }
 
     /**
+     * Mengambil class room berdasarkan status.
+     *
+     * @param string $status
+     * @return mixed
+     */
+    public function getClassRoomByStatus($status)
+    {
+        return $this->model->with('program', 'teacher', 'schedules', 'students', 'assignments')->where('status', $status)->get();
+    }
+
+    /**
      * Membuat class room baru.
      *
      * @param array $data

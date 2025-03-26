@@ -28,6 +28,14 @@ interface AssignmentRepositoryInterface
     public function getAssignmentByName($name);
 
     /**
+     * Mengambil assignment berdasarkan status.
+     *
+     * @param string $status
+     * @return mixed
+     */
+    public function getAssignmentByStatus($status);
+
+    /**
      * Membuat assignment baru.
      *
      * @param array $data

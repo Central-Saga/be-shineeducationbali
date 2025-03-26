@@ -28,6 +28,14 @@ interface ClassRoomRepositoryInterface
     public function getClassRoomByName($name);
 
     /**
+     * Mengambil class room berdasarkan status.
+     *
+     * @param string $status
+     * @return mixed
+     */
+    public function getClassRoomByStatus($status);
+
+    /**
      * Membuat class room baru.
      *
      * @param array $data

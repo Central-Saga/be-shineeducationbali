@@ -28,7 +28,7 @@ class AssignmentFactory extends Factory
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
             'due_date' => fake()->dateTimeBetween('now', '+1 year'),
-            'status' => fake()->randomElement(['Aktif', 'Non Aktif']),
+            'status' => fake()->randomElement(['Belum Terselesaikan', 'Terselesaikan', 'Ditolak', 'Dalam Pengajuan']),
         ];
     }
 }

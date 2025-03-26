@@ -11,7 +11,7 @@ class AssignmentUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,14 @@ class AssignmentUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'student_id' => ['sometimes', 'exists:students,id'],
+            'class_room_id' => ['sometimes', 'exists:class_rooms,id'],
+            'teacher_id' => ['sometimes', 'exists:teachers,id'],
+            'material_id' => ['sometimes', 'exists:materials,id'],
+            'title' => ['sometimes', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'due_date' => ['sometimes', 'date'],
+            'status' => ['sometimes', 'string', 'in:pending,submitted,graded'],
         ];
     }
 }

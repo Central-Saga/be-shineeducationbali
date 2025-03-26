@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('title', 150);
             $table->text('description');
             $table->datetime('due_date');
-            $table->enum('status', ['Aktif', 'Non Aktif'])->default('Aktif');
+            $table->enum('status', ['Belum Terselesaikan', 'Terselesaikan', 'Ditolak', 'Dalam Pengajuan'])->default('Belum Terselesaikan');
             $table->timestamps();
         });
     }

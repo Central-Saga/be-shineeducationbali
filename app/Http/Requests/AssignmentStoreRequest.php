@@ -11,7 +11,7 @@ class AssignmentStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,14 @@ class AssignmentStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'student_id' => ['required', 'exists:students,id'],
+            'class_room_id' => ['required', 'exists:class_rooms,id'],
+            'teacher_id' => ['required', 'exists:teachers,id'],
+            'material_id' => ['required', 'exists:materials,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'due_date' => ['required', 'date'],
+            'status' => ['required', 'string', 'in:pending,submitted,graded'],
         ];
     }
 }
