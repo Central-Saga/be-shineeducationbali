@@ -36,19 +36,18 @@ interface ClassRoomServiceInterface
     public function getClassRoomByStatus($status);
 
     /**
-     * Mengambil class room berdasarkan status Aktif.
+     * Mengambil class room yang aktif.
      *
      * @return mixed
      */
-    public function getClassRoomByActive();
+    public function getActiveClassRooms();
 
     /**
-     * Mengambil class room berdasarkan status Tidak Aktif.
+     * Mengambil class room yang tidak aktif.
      *
      * @return mixed
      */
-    public function getClassRoomByInactive();
-
+    public function getInactiveClassRooms();
 
     /**
      * Membuat class room baru.

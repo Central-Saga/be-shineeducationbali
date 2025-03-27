@@ -58,6 +58,8 @@ use App\Repositories\Contracts\AssignmentRepositoryInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
+use App\Services\Contracts\AssignmentServiceInterface;
+use App\Services\Implementations\AssignmentService;
 
 class AppServiceProvider extends ServiceProvider
 {

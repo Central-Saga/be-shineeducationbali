@@ -2,7 +2,7 @@
 
 namespace App\Services\Contracts;
 
-interface AssigmentServiceInterface
+interface AssignmentServiceInterface
 {
     /**
      * Mengambil semua assignments.

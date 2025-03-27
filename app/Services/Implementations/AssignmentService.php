@@ -6,7 +6,7 @@ use App\Services\Contracts\AssigmentServiceInterface;
 use App\Repositories\Contracts\AssigmentRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
 
-class AssigmentService implements AssigmentServiceInterface
+class AssignmentService implements AssigmentServiceInterface
 {
     protected $repository;
 

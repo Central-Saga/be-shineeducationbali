@@ -69,26 +69,26 @@ class ClassRoomService implements ClassRoomServiceInterface
     }
 
     /**
-     * Mengambil class room berdasarkan status Aktif.
+     * Mengambil class room yang aktif.
      *
      * @return mixed
      */
-    public function getClassRoomByActive()
+    public function getActiveClassRooms()
     {
         return Cache::remember(self::CLASS_ROOMS_ACTIVE_CACHE_KEY, 3600, function () {
-            return $this->repository->getClassRoomByActive();
+            return $this->repository->getActiveClassRooms();
         });
     }
 
     /**
-     * Mengambil class room berdasarkan status Tidak Aktif.
+     * Mengambil class room yang tidak aktif.
      *
      * @return mixed
      */
-    public function getClassRoomByInactive()
+    public function getInactiveClassRooms()
     {
         return Cache::remember(self::CLASS_ROOMS_INACTIVE_CACHE_KEY, 3600, function () {
-            return $this->repository->getClassRoomByInactive();
+            return $this->repository->getInactiveClassRooms();
         });
     }
 

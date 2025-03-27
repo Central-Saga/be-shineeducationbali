@@ -26,6 +26,7 @@ class ClassRoomController extends Controller
     {
         try {
             $status = $request->query('status');
+
             if ($status === null) {
                 $classRooms = $this->classRoomService->getAllClassRooms();
             } elseif ($status == 1) {
@@ -34,14 +35,15 @@ class ClassRoomController extends Controller
                 $classRooms = $this->classRoomService->getInactiveClassRooms();
             } else {
                 return response()->json([
-                    'message' => 'Invalid status parameter'
-                ], Response::HTTP_BAD_REQUEST);
+                    'message' => 'Parameter status tidak valid'
+                ], 400);
             }
+
             return ClassRoomResource::collection($classRooms);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            ], 500);
         }
     }
 
@@ -56,7 +58,7 @@ class ClassRoomController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ], Response::HTTP_BAD_REQUEST);
+            ], 400);
         }
     }
 
@@ -67,11 +69,16 @@ class ClassRoomController extends Controller
     {
         try {
             $classRoom = $this->classRoomService->getClassRoomById($id);
+            if (!$classRoom) {
+                return response()->json([
+                    'message' => 'Kelas tidak ditemukan'
+                ], 404);
+            }
             return new ClassRoomResource($classRoom);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ], Response::HTTP_NOT_FOUND);
+            ], 500);
         }
     }
 
@@ -82,11 +89,16 @@ class ClassRoomController extends Controller
     {
         try {
             $classRoom = $this->classRoomService->updateClassRoom($id, $request->validated());
+            if (!$classRoom) {
+                return response()->json([
+                    'message' => 'Kelas tidak ditemukan'
+                ], 404);
+            }
             return new ClassRoomResource($classRoom);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ], Response::HTTP_BAD_REQUEST);
+            ], 400);
         }
     }
 
@@ -96,29 +108,44 @@ class ClassRoomController extends Controller
     public function destroy(string $id)
     {
         try {
-            $this->classRoomService->deleteClassRoom($id);
+            $result = $this->classRoomService->deleteClassRoom($id);
+            if (!$result) {
+                return response()->json([
+                    'message' => 'Kelas tidak ditemukan'
+                ], 404);
+            }
             return response()->json([
-                'message' => 'Classroom berhasil dihapus'
+                'message' => 'Kelas berhasil dihapus'
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ], Response::HTTP_BAD_REQUEST);
+            ], 400);
         }
     }
 
-    public function updateStatus(string $id, Request $request)
+    /**
+     * Update status of the specified resource.
+     */
+    public function updateStatus(Request $request, string $id)
     {
-        $request->validate([
-            'status' => 'required|in:Aktif,Non Aktif',
-        ]);
+        try {
+            $request->validate([
+                'status' => 'required|in:Aktif,Non Aktif'
+            ]);
 
-        $classRoom = $this->classRoomService->updateClassRoomStatus($id, $request->validated());
-
-        if (!$classRoom) {
-            return response()->json(['message' => 'Failed to update classroom status'], 404);
+            $classRoom = $this->classRoomService->updateClassRoom($id, $request->validated());
+            if (!$classRoom) {
+                return response()->json([
+                    'message' => 'Kelas tidak ditemukan'
+                ], 404);
+            }
+            return new ClassRoomResource($classRoom);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
         }
-        return new ClassRoomResource($classRoom);
     }
 
     /**
