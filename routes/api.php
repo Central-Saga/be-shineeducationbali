@@ -15,6 +15,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\EducationLevelController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\MeetingFrequencyController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StudentController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -84,6 +85,11 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::middleware('permission:mengelola leaves')->group(function () {
         Route::apiResource('leaves', LeaveController::class);
         Route::patch('leaves/{id}/status', [LeaveController::class, 'updateStatus']);
+    });
+    // Notifications
+    Route::middleware('permission:mengelola notifications')->group(function () {
+        Route::apiResource('notifications', NotificationController::class);
+        Route::patch('notifications/{id}/status', [NotificationController::class, 'updateStatus']);
     });
 });
 

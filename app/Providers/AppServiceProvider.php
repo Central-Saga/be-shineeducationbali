@@ -109,6 +109,10 @@ class AppServiceProvider extends ServiceProvider
         // Binding Leave
         $this->app->bind(LeaveRepositoryInterface::class, LeaveRepository::class);
         $this->app->bind(LeaveServiceInterface::class, LeaveService::class);
+
+        // Binding Notification
+        $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
+        $this->app->bind(NotificationServiceInterface::class, NotificationService::class);
     }
 
     /**
