@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             TeacherSeeder::class,
             LeaveSeeder::class,
             NotificationSeeder::class,
+            ArticleSeeder::class,
         ]);
     }
 }

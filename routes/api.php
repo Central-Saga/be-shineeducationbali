@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,11 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::middleware('permission:mengelola notifications')->group(function () {
         Route::apiResource('notifications', NotificationController::class);
         Route::patch('notifications/{id}/status', [NotificationController::class, 'updateStatus']);
+    });
+    // Article
+    Route::middleware('permission:mengelola articles')->group(function () {
+        Route::apiResource('articles', ArticleController::class);
+        Route::patch('articles/{id}/status', [ArticleController::class, 'updateStatus']);
     });
 });
 

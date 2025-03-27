@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Student;
+use App\Repositories\ArticleRepository;
+use App\Repositories\ArticleRepositoryInterface;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\RoleRepository;
@@ -51,8 +53,14 @@ use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
 use App\Repositories\LeaveRepository;
 use App\Repositories\LeaveRepositoryInterface;
+use App\Repositories\NotificationRepository;
+use App\Repositories\NotificationRepositoryInterface;
+use App\Services\ArticleService;
+use App\Services\ArticleServiceInterface;
 use App\Services\LeaveService;
 use App\Services\LeaveServiceInterface;
+use App\Services\NotificationService;
+use App\Services\NotificationServiceInterface;
 use App\Services\StudentService as ServicesStudentService;
 
 class AppServiceProvider extends ServiceProvider
@@ -113,6 +121,10 @@ class AppServiceProvider extends ServiceProvider
         // Binding Notification
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
         $this->app->bind(NotificationServiceInterface::class, NotificationService::class);
+
+        // Binding Article
+        $this->app->bind(ArticleRepositoryInterface::class, ArticleRepository::class);
+        $this->app->bind(ArticleServiceInterface::class, ArticleService::class);
     }
 
     /**
