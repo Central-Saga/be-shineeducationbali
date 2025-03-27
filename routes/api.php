@@ -16,6 +16,8 @@ use App\Http\Controllers\ClassTypeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\EducationLevelController;
 use App\Http\Controllers\MeetingFrequencyController;
+use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\ScheduleController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -90,7 +92,6 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     // Schedules
     Route::middleware('permission:mengelola schedules')->group(function () {
         Route::apiResource('schedules', ScheduleController::class);
-        Route::patch('schedules/{id}/status', [ScheduleController::class, 'updateStatus']);
     });
 
     // Assignments
