@@ -1,24 +1,25 @@
 <?php
 
-use App\Http\Controllers\ArticleController;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProgramController;
-use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\MaterialController;
-use App\Http\Controllers\TeacherController;
-use App\Http\Controllers\ClassTypeController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\EducationLevelController;
-use App\Http\Controllers\JobVacancyController;
 use App\Http\Controllers\LeaveController;
-use App\Http\Controllers\MeetingFrequencyController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\ClassTypeController;
+use App\Http\Controllers\JobVacancyController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\EducationLevelController;
+use App\Http\Controllers\JobApplicationController;
+use App\Http\Controllers\MeetingFrequencyController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -27,7 +28,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
+    });
     // Permissions
     Route::middleware('permission:mengelola permissions')->group(function () {
         Route::apiResource('permissions', PermissionController::class);
@@ -103,6 +104,10 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
         Route::apiResource('job-vacancies', JobVacancyController::class);
         Route::patch('job-vacancies/{id}/status', [JobVacancyController::class, 'updateStatus']);
     });
+    // Job Applications
+    Route::middleware('permission:mengelola jobApplications')->group(function () {
+        Route::apiResource('job-applications', JobApplicationController::class);
+        Route::patch('job-applications/{id}/status', [JobApplicationController::class, 'updateStatus']);
 });
 
 Route::get('/user', function (Request $request) {

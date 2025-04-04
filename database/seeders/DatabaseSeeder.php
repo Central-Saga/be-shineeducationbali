@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
             NotificationSeeder::class,
             ArticleSeeder::class,
             JobVacancySeeder::class,
+            JobApplicationSeeder::class,
         ]);
     }
 }

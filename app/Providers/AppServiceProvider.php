@@ -3,14 +3,28 @@
 namespace App\Providers;
 
 use App\Models\Student;
-use App\Repositories\ArticleRepository;
-use App\Repositories\ArticleRepositoryInterface;
+use App\Services\LeaveService;
+use App\Services\ArticleService;
+use App\Services\JobVacancyService;
+use App\Repositories\LeaveRepository;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Schema;
+use App\Repositories\ArticleRepository;
+use App\Services\JobApplicationService;
+use App\Services\LeaveServiceInterface;
 use Illuminate\Support\ServiceProvider;
+use App\Services\ArticleServiceInterface;
+use App\Repositories\JobVacancyRepository;
+use App\Repositories\NotificationRepository;
+use App\Services\JobVacancyServiceInterface;
 use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\Implementations\RoleService;
 use App\Services\Implementations\UserService;
+use App\Repositories\JobApplicationRepository;
+use App\Repositories\LeaveRepositoryInterface;
+use App\Services\NotificationServiceInterface;
+use App\Repositories\ArticleRepositoryInterface;
 use App\Repositories\Eloquent\ProgramRepository;
 use App\Repositories\Eloquent\StudentRepository;
 use App\Repositories\Eloquent\SubjectRepository;
@@ -21,22 +35,26 @@ use App\Services\Implementations\ProgramService;
 use App\Services\Implementations\StudentService;
 use App\Services\Implementations\SubjectService;
 use App\Services\Implementations\TeacherService;
+use App\Services\JobApplicationServiceInterface;
 use App\Repositories\Eloquent\MaterialRepository;
 use App\Services\Implementations\MaterialService;
 use App\Repositories\Eloquent\ClassTypeRepository;
 use App\Services\Implementations\ClassTypeService;
 use App\Repositories\Eloquent\PermissionRepository;
+use App\Repositories\JobVacancyRepositoryInterface;
 use App\Services\Contracts\ProgramServiceInterface;
 use App\Services\Contracts\StudentServiceInterface;
 use App\Services\Contracts\SubjectServiceInterface;
 use App\Services\Contracts\TeacherServiceInterface;
 use App\Services\Implementations\PermissionService;
 use App\Services\Contracts\MaterialServiceInterface;
+use App\Repositories\NotificationRepositoryInterface;
 use App\Services\Contracts\ClassTypeServiceInterface;
 use App\Services\Contracts\PermissionServiceInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Eloquent\EducationLevelRepository;
+use App\Repositories\JobApplicationRepositoryInterface;
 use App\Services\Implementations\EducationLevelService;
 use App\Repositories\Eloquent\MeetingFrequencyRepository;
 use App\Services\Implementations\MeetingFrequencyService;
@@ -45,23 +63,13 @@ use App\Repositories\Contracts\StudentRepositoryInterface;
 use App\Repositories\Contracts\SubjectRepositoryInterface;
 use App\Repositories\Contracts\TeacherRepositoryInterface;
 use App\Services\Contracts\EducationLevelServiceInterface;
+use App\Services\StudentService as ServicesStudentService;
 use App\Repositories\Contracts\MaterialRepositoryInterface;
 use App\Repositories\Contracts\ClassTypeRepositoryInterface;
 use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
-use App\Repositories\LeaveRepository;
-use App\Repositories\LeaveRepositoryInterface;
-use App\Repositories\NotificationRepository;
-use App\Repositories\NotificationRepositoryInterface;
-use App\Services\ArticleService;
-use App\Services\ArticleServiceInterface;
-use App\Services\LeaveService;
-use App\Services\LeaveServiceInterface;
-use App\Services\NotificationService;
-use App\Services\NotificationServiceInterface;
-use App\Services\StudentService as ServicesStudentService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -129,6 +137,10 @@ class AppServiceProvider extends ServiceProvider
         // Binding Job Vacancy
         $this->app->bind(JobVacancyRepositoryInterface::class, JobVacancyRepository::class);
         $this->app->bind(JobVacancyServiceInterface::class, JobVacancyService::class);
+
+        // Binding JobApplication
+        $this->app->bind(JobApplicationRepositoryInterface::class, JobApplicationRepository::class);
+        $this->app->bind(JobApplicationServiceInterface::class, JobApplicationService::class);
     }
 
     /**
