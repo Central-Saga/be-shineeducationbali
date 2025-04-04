@@ -125,6 +125,10 @@ class AppServiceProvider extends ServiceProvider
         // Binding Article
         $this->app->bind(ArticleRepositoryInterface::class, ArticleRepository::class);
         $this->app->bind(ArticleServiceInterface::class, ArticleService::class);
+
+        // Binding Job Vacancy
+        $this->app->bind(JobVacancyRepositoryInterface::class, JobVacancyRepository::class);
+        $this->app->bind(JobVacancyServiceInterface::class, JobVacancyService::class);
     }
 
     /**

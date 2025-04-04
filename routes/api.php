@@ -14,6 +14,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ClassTypeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\EducationLevelController;
+use App\Http\Controllers\JobVacancyController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\MeetingFrequencyController;
 use App\Http\Controllers\NotificationController;
@@ -96,6 +97,11 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::middleware('permission:mengelola articles')->group(function () {
         Route::apiResource('articles', ArticleController::class);
         Route::patch('articles/{id}/status', [ArticleController::class, 'updateStatus']);
+    });
+    // Job Vacancies
+    Route::middleware('permission:mengelola job vacancies')->group(function () {
+        Route::apiResource('job-vacancies', JobVacancyController::class);
+        Route::patch('job-vacancies/{id}/status', [JobVacancyController::class, 'updateStatus']);
     });
 });
 
