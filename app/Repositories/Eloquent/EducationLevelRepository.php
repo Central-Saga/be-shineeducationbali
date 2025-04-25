@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\EducationLevel;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 
 class EducationLevelRepository implements EducationLevelRepositoryInterface
