@@ -162,7 +162,7 @@ class RoleService implements RoleServiceInterface
         if ($role) {
             $result = $this->repository->updateRoleStatus($id, $status);
 
-            $this->clearRoleCaches($id);
+            $this->clearRoleCaches();
 
             return $result;
         }

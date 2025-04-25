@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\ClassType;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\ClassTypeRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ClassTypeRepository implements ClassTypeRepositoryInterface
 {
