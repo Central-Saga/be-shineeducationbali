@@ -17,7 +17,6 @@ use App\Http\Controllers\ClassTypeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\EducationLevelController;
 use App\Http\Controllers\MeetingFrequencyController;
-use App\Http\Controllers\StudentController;
 use App\Http\Controllers\GradeCategoryController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ScheduleController;
