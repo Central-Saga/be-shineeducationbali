@@ -8,15 +8,19 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\ClassTypeController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\EducationLevelController;
 use App\Http\Controllers\MeetingFrequencyController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\GradeCategoryController;
+use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\ScheduleController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -77,9 +81,26 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
         Route::patch('teachers/{id}/status', [TeacherController::class, 'updateStatus']);
     });
     // Students
-    Route::middleware('permission:mengelola studends')->group(function () {
+    Route::middleware('permission:mengelola students')->group(function () {
         Route::apiResource('students', StudentController::class);
-        Route::patch('student/{id}/status', [StudentController::class, 'updateStatus']);
+        Route::patch('students/{id}/status', [StudentController::class, 'updateStatus']);
+    });
+    // Class Rooms
+    Route::middleware('permission:mengelola class rooms')->group(function () {
+        Route::apiResource('class-rooms', ClassRoomController::class);
+        Route::patch('class-rooms/{id}/status', [ClassRoomController::class, 'updateStatus']);
+        Route::post('class-rooms/{id}/attach-students', [ClassRoomController::class, 'attachStudent']);
+        Route::post('class-rooms/{id}/detach-students', [ClassRoomController::class, 'detachStudent']);
+    });
+    // Schedules
+    Route::middleware('permission:mengelola schedules')->group(function () {
+        Route::apiResource('schedules', ScheduleController::class);
+    });
+
+    // Assignments
+    Route::middleware('permission:mengelola assignments')->group(function () {
+        Route::apiResource('assignments', AssignmentController::class);
+        Route::patch('assignments/{id}/status', [AssignmentController::class, 'updateStatus']);
     });
     // Grade Category
     Route::middleware('permission:mengelola grade categories')->group(function () {

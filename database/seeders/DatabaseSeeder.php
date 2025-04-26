@@ -25,6 +25,11 @@ class DatabaseSeeder extends Seeder
             TeacherSeeder::class,
             GradeCategorySeeder::class,
             CertificateSeeder::class,
+            // Tambahkan seeder baru
+            GradeSeeder::class,
+            CertificateGradeSeeder::class,
+            StudentAttendanceSeeder::class,
+
         ]);
     }
 }

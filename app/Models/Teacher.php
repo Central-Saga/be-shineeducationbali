@@ -21,11 +21,18 @@ class Teacher extends Model
 
     ];
 
-    public function subject(){
+    public function subject()
+    {
         return $this->belongsTo(Subject::class, 'subject_id', 'id');
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function classRooms()
+    {
+        return $this->hasMany(ClassRoom::class);
     }
 }

@@ -138,7 +138,7 @@ class PermissionService implements PermissionServiceInterface
         if ($permission) {
             $result = $this->repository->updatePermissionStatus($id, $status);
 
-            $this->clearPermissionCaches($id);
+            $this->clearPermissionCaches();
 
             return $result;
         }

@@ -20,9 +20,14 @@ use App\Services\Implementations\ProgramService;
 use App\Services\Implementations\SubjectService;
 use App\Services\Implementations\TeacherService;
 use App\Repositories\Eloquent\MaterialRepository;
+use App\Repositories\Eloquent\ScheduleRepository;
 use App\Services\Implementations\MaterialService;
+use App\Services\Implementations\ScheduleService;
+use App\Repositories\Eloquent\ClassRoomRepository;
 use App\Repositories\Eloquent\ClassTypeRepository;
+use App\Services\Implementations\ClassRoomService;
 use App\Services\Implementations\ClassTypeService;
+use App\Repositories\Eloquent\AssignmentRepository;
 use App\Repositories\Eloquent\PermissionRepository;
 use App\Services\Contracts\ProgramServiceInterface;
 use App\Services\Contracts\StudentServiceInterface;
@@ -30,6 +35,8 @@ use App\Services\Contracts\SubjectServiceInterface;
 use App\Services\Contracts\TeacherServiceInterface;
 use App\Services\Implementations\PermissionService;
 use App\Services\Contracts\MaterialServiceInterface;
+use App\Services\Contracts\ScheduleServiceInterface;
+use App\Services\Contracts\ClassRoomServiceInterface;
 use App\Services\Contracts\ClassTypeServiceInterface;
 use App\Services\Contracts\PermissionServiceInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
@@ -44,8 +51,11 @@ use App\Repositories\Contracts\SubjectRepositoryInterface;
 use App\Repositories\Contracts\TeacherRepositoryInterface;
 use App\Services\Contracts\EducationLevelServiceInterface;
 use App\Repositories\Contracts\MaterialRepositoryInterface;
+use App\Repositories\Contracts\ScheduleRepositoryInterface;
+use App\Repositories\Contracts\ClassRoomRepositoryInterface;
 use App\Repositories\Contracts\ClassTypeRepositoryInterface;
 use App\Services\Contracts\MeetingFrequencyServiceInterface;
+use App\Repositories\Contracts\AssignmentRepositoryInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\GradeCategoryRepositoryInterface;
@@ -57,6 +67,8 @@ use App\Services\Contracts\GradeCategoryServiceInterface;
 use App\Services\Implementations\CertificateService;
 use App\Services\Implementations\GradeCategoryService;
 use App\Services\StudentService;
+use App\Services\Contracts\AssignmentServiceInterface;
+use App\Services\Implementations\AssignmentService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -116,6 +128,18 @@ class AppServiceProvider extends ServiceProvider
         // Binding Certificate
         $this->app->bind(CertificateRepositoryInterface::class, CertificateRepository::class);
         $this->app->bind(CertificateServiceInterface::class, CertificateService::class);
+      
+        // Binding Schedule
+        $this->app->bind(ScheduleRepositoryInterface::class, ScheduleRepository::class);
+        $this->app->bind(ScheduleServiceInterface::class, ScheduleService::class);
+
+        // Binding Assignment
+        $this->app->bind(AssignmentRepositoryInterface::class, AssignmentRepository::class);
+        $this->app->bind(AssignmentServiceInterface::class, AssignmentService::class);
+
+        // Binding Class Room
+        $this->app->bind(ClassRoomRepositoryInterface::class, ClassRoomRepository::class);
+        $this->app->bind(ClassRoomServiceInterface::class, ClassRoomService::class);
     }
 
     /**
