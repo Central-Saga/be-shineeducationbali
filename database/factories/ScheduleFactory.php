@@ -17,8 +17,11 @@ class ScheduleFactory extends Factory
      */
     public function definition(): array
     {
+        // Cek apakah ada data ClassRoom
+        $classRoom = ClassRoom::count() > 0 ? ClassRoom::inRandomOrder()->first() : ClassRoom::factory()->create();
+
         return [
-            'class_room_id' => ClassRoom::all()->random()->id,
+            'class_room_id' => $classRoom->id,
             'day' => fake()->randomElement(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']),
             'start_time' => fake()->time(),
             'end_time' => fake()->time(),

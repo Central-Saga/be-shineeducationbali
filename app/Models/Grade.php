@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 // Tambahkan import kelas yang ada
 use App\Models\Student;
-use App\Models\ClassType;
+use App\Models\ClassRoom;
 use App\Models\Material;
 use App\Models\CertificateGrade;
 
@@ -21,7 +21,7 @@ class Grade extends Model
      *
      * @var string
      */
-    protected $table = 'grade';
+    protected $table = 'grades';
 
     /**
      * Atribut yang dapat diisi.
@@ -30,7 +30,7 @@ class Grade extends Model
      */
     protected $fillable = [
         'student_id',
-        'class_id',
+        'class_rooms_id',
         'material_id',
         'assignment_id',
         'grade_category_id',
@@ -58,11 +58,10 @@ class Grade extends Model
 
     /**
      * Relasi dengan kelas
-     * Note: class adalah keyword di PHP, jadi kita lebih baik menggunakan nama lain seperti classType
      */
-    public function classType(): BelongsTo
+    public function classRoom(): BelongsTo
     {
-        return $this->belongsTo(ClassType::class, 'class_id');
+        return $this->belongsTo(ClassRoom::class, 'class_rooms_id');
     }
 
     /**

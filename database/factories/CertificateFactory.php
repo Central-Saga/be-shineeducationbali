@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Student;
+use App\Models\Program;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,8 +19,12 @@ class CertificateFactory extends Factory
     public function definition(): array
     {
         return [
-            'student_id' => $this->faker->numberBetween(1, 50), // Assumes 50 students exist
-            'program_id' => $this->faker->numberBetween(1, 20), // Assumes 20 programs exist
+            'student_id' => function () {
+                return Student::inRandomOrder()->first()->id ?? Student::factory()->create()->id;
+            },
+            'program_id' => function () {
+                return Program::inRandomOrder()->first()->id ?? Program::factory()->create()->id;
+            },
             'issue_date' => $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
         ];
     }

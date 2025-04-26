@@ -18,9 +18,13 @@ class ClassRoomFactory extends Factory
      */
     public function definition(): array
     {
+        // Cek apakah ada data Program dan Teacher
+        $program = Program::count() > 0 ? Program::inRandomOrder()->first() : Program::factory()->create();
+        $teacher = Teacher::count() > 0 ? Teacher::inRandomOrder()->first() : Teacher::factory()->create();
+
         return [
-            'program_id' => Program::all()->random()->id,
-            'teacher_id' => Teacher::all()->random()->id,
+            'program_id' => $program->id,
+            'teacher_id' => $teacher->id,
             'class_room_name' => fake()->word(),
             'capacity' => fake()->numberBetween(1, 100),
             'status' => fake()->randomElement(['Aktif', 'Non Aktif']),

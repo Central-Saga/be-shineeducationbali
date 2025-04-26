@@ -14,22 +14,35 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // 1. Roles dan Permissions (harus paling awal)
             RoleAndPermissionSeeder::class,
+            
+            // 2. User dan data master
             UserSeeder::class,
             EducationLevelSeeder::class,
             SubjectSeeder::class,
             ClassTypeSeeder::class,
             MeetingFrequencySeeder::class,
             ProgramSeeder::class,
-            MaterialSeeder::class,
+            
+            // 3. Data pendidik dan data terkait program
             TeacherSeeder::class,
+            StudentSeeder::class,
+            MaterialSeeder::class,
             GradeCategorySeeder::class,
-            CertificateSeeder::class,
-            // Tambahkan seeder baru
+            
+            // 4. Data operasional sekolah
+            ClassRoomSeeder::class,
+            ScheduleSeeder::class,
+            AssignmentSeeder::class,
+            
+            // 5. Data penilaian dan sertifikat
             GradeSeeder::class,
+            CertificateSeeder::class,
             CertificateGradeSeeder::class,
+            
+            // 6. Data absensi
             StudentAttendanceSeeder::class,
-
         ]);
     }
 }

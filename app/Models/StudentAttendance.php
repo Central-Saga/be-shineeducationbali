@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 // Perbaikan import kelas
-use App\Models\ClassType;
+use App\Models\ClassRoom;
 use App\Models\Student;
 use App\Models\Teacher;
 
@@ -27,7 +27,7 @@ class StudentAttendance extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'class_id',
+        'class_rooms_id',
         'student_id',
         'teacher_id',
         'attendance_date',
@@ -46,9 +46,9 @@ class StudentAttendance extends Model
     /**
      * Relasi dengan kelas
      */
-    public function class(): BelongsTo
+    public function classRoom(): BelongsTo
     {
-        return $this->belongsTo(ClassType::class, 'class_id');
+        return $this->belongsTo(ClassRoom::class, 'class_rooms_id');
     }
 
     /**
