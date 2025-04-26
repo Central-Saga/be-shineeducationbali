@@ -1,49 +1,62 @@
 <?php
 
-namespace App\Services\Interfaces;
-
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\Certificate;
+namespace App\Services\Contracts;
 
 interface CertificateServiceInterface
 {
     /**
-     * Mengambil semua data certificate.
+     * Mengambil semua sertifikat.
      *
-     * @return Collection
+     * @return mixed
      */
-    public function getAllCertificates(): Collection;
+    public function getAllCertificates();
 
     /**
-     * Mengambil certificate berdasarkan ID.
+     * Mengambil sertifikat berdasarkan ID.
      *
      * @param int $id
-     * @return Certificate
+     * @return mixed
      */
-    public function getCertificateById(int $id): Certificate;
+    public function getCertificateById($id);
 
     /**
-     * Membuat certificate baru.
+     * Mengambil sertifikat berdasarkan ID siswa.
+     *
+     * @param int $studentId
+     * @return mixed
+     */
+    public function getCertificatesByStudentId($studentId);
+
+    /**
+     * Mengambil sertifikat berdasarkan ID program.
+     *
+     * @param int $programId
+     * @return mixed
+     */
+    public function getCertificatesByProgramId($programId);
+
+    /**
+     * Membuat sertifikat baru.
      *
      * @param array $data
-     * @return Certificate
+     * @return mixed
      */
-    public function createCertificate(array $data): Certificate;
+    public function createCertificate(array $data);
 
     /**
-     * Memperbarui certificate berdasarkan ID.
+     * Memperbarui sertifikat berdasarkan ID.
      *
      * @param int $id
      * @param array $data
-     * @return Certificate
+     * @return mixed
      */
-    public function updateCertificate(int $id, array $data): Certificate;
+    public function updateCertificate($id, array $data);
 
     /**
-     * Menghapus certificate berdasarkan ID.
+     * Menghapus sertifikat berdasarkan ID.
      *
      * @param int $id
-     * @return bool
+     * @return mixed
      */
-    public function deleteCertificate(int $id): bool;
+    public function deleteCertificate($id);
 }

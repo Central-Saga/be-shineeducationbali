@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GradeCategoryStoreRequest;
 use App\Http\Requests\GradeCategoryUpdateRequest;
 use App\Http\Resources\GradeCategoryResource;
-use App\Services\Interfaces\GradeCategoryServiceInterface;
+use App\Services\Contracts\GradeCategoryServiceInterface;
 use Illuminate\Http\JsonResponse;
 
 class GradeCategoryController extends Controller

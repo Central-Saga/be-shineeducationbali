@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\CertificateGradeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProgramController;
@@ -18,8 +19,10 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\EducationLevelController;
 use App\Http\Controllers\MeetingFrequencyController;
 use App\Http\Controllers\GradeCategoryController;
+use App\Http\Controllers\GradeController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\StudentAttendanceController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -107,7 +110,36 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     });
     // Certificates
     Route::middleware('permission:mengelola certificates')->group(function () {
-    Route::apiResource('certificates', CertificateController::class);
+        Route::apiResource('certificates', CertificateController::class);
+    });
+    
+    // Grades
+    Route::middleware('permission:mengelola grades')->group(function () {
+        Route::apiResource('grades', GradeController::class);
+        Route::get('grades/student/{studentId}', [GradeController::class, 'getByStudent']);
+        Route::get('grades/class-room/{classRoomId}', [GradeController::class, 'getByClassRoom']);
+        Route::get('grades/grade-category/{gradeCategoryId}', [GradeController::class, 'getByGradeCategory']);
+        Route::get('grades/average/student/{studentId}/material/{materialId}', [GradeController::class, 'getAverageByStudentAndMaterial']);
+        Route::get('grades/average/class-room/{classRoomId}/material/{materialId}', [GradeController::class, 'getAverageByClassRoomAndMaterial']);
+    });
+    
+    // Certificate Grades
+    Route::middleware('permission:mengelola certificate grades')->group(function () {
+        Route::apiResource('certificate-grades', CertificateGradeController::class);
+        Route::get('certificate-grades/certificate/{certificateId}', [CertificateGradeController::class, 'getByCertificateId']);
+        Route::get('certificate-grades/grade/{gradeId}', [CertificateGradeController::class, 'getByGradeId']);
+    });
+    
+    // Student Attendances
+    Route::middleware('permission:mengelola student attendances')->group(function () {
+        Route::apiResource('student-attendances', StudentAttendanceController::class);
+        Route::get('student-attendances/student/{studentId}', [StudentAttendanceController::class, 'getByStudent']);
+        Route::get('student-attendances/class-room/{classRoomId}', [StudentAttendanceController::class, 'getByClassRoom']);
+        Route::get('student-attendances/teacher/{teacherId}', [StudentAttendanceController::class, 'getByTeacher']);
+        Route::get('student-attendances/date/{date}', [StudentAttendanceController::class, 'getByDate']);
+        Route::get('student-attendances/date-range/{startDate}/{endDate}', [StudentAttendanceController::class, 'getByDateRange']);
+        Route::get('student-attendances/status/{status}', [StudentAttendanceController::class, 'getByStatus']);
+        Route::get('student-attendances/summary/{studentId}', [StudentAttendanceController::class, 'getStudentAttendanceSummary']);
     });
 });
 

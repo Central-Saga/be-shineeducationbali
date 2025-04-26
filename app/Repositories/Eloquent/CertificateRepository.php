@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
 
 use App\Models\Certificate;
-use App\Repositories\Interfaces\CertificateRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Repositories\Contracts\CertificateRepositoryInterface;
 
 class CertificateRepository implements CertificateRepositoryInterface
 {
@@ -16,60 +17,116 @@ class CertificateRepository implements CertificateRepositoryInterface
     }
 
     /**
-     * Mendapatkan semua data certificate.
+     * Mengambil semua sertifikat.
      *
-     * @return Collection
+     * @return mixed
      */
-    public function getAll(): Collection
+    public function getAllCertificates()
     {
         return $this->model->with(['student', 'program'])->get();
     }
 
     /**
-     * Mendapatkan certificate berdasarkan ID.
+     * Mengambil sertifikat berdasarkan ID.
      *
      * @param int $id
-     * @return Certificate|null
+     * @return mixed
      */
-    public function findById(int $id): ?Certificate
+    public function getCertificateById($id)
     {
-        return $this->model->with(['student', 'program'])->findOrFail($id);
+        try {
+            return $this->model->with(['student', 'program'])->findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            Log::error("Certificate with ID {$id} not found.");
+            return null;
+        }
     }
 
     /**
-     * Membuat certificate baru.
+     * Mengambil sertifikat berdasarkan ID siswa.
+     *
+     * @param int $studentId
+     * @return mixed
+     */
+    public function getCertificatesByStudentId($studentId)
+    {
+        return $this->model->where('student_id', $studentId)
+            ->with(['student', 'program'])
+            ->get();
+    }
+
+    /**
+     * Mengambil sertifikat berdasarkan ID program.
+     *
+     * @param int $programId
+     * @return mixed
+     */
+    public function getCertificatesByProgramId($programId)
+    {
+        return $this->model->where('program_id', $programId)
+            ->with(['student', 'program'])
+            ->get();
+    }
+
+    /**
+     * Membuat sertifikat baru.
      *
      * @param array $data
-     * @return Certificate
+     * @return mixed
      */
-    public function create(array $data): Certificate
+    public function createCertificate(array $data)
     {
-        return $this->model->create($data);
+        try {
+            $certificate = $this->model->create($data);
+            $certificate->load(['student', 'program']);
+            return $certificate;
+        } catch (\Exception $e) {
+            Log::error("Failed to create certificate: {$e->getMessage()}");
+            return null;
+        }
     }
 
     /**
-     * Memperbarui certificate berdasarkan ID.
+     * Memperbarui sertifikat berdasarkan ID.
      *
      * @param int $id
      * @param array $data
-     * @return Certificate
+     * @return mixed
      */
-    public function update(int $id, array $data): Certificate
+    public function updateCertificate($id, array $data)
     {
-        $certificate = $this->model->findOrFail($id);
-        $certificate->update($data);
-        return $certificate;
+        try {
+            $certificate = $this->getCertificateById($id);
+            if ($certificate) {
+                $certificate->update($data);
+                $certificate->load(['student', 'program']);
+                return $certificate;
+            }
+            return null;
+        } catch (\Exception $e) {
+            Log::error("Failed to update certificate with ID {$id}: {$e->getMessage()}");
+            return null;
+        }
     }
 
     /**
-     * Menghapus certificate berdasarkan ID.
+     * Menghapus sertifikat berdasarkan ID.
      *
      * @param int $id
-     * @return bool
+     * @return mixed
      */
-    public function delete(int $id): bool
+    public function deleteCertificate($id)
     {
-        $certificate = $this->model->findOrFail($id);
-        return $certificate->delete();
+        try {
+            $certificate = $this->getCertificateById($id);
+            if ($certificate) {
+                $certificate->delete();
+                return true;
+            }
+            return false;
+        } catch (\Exception $e) {
+            Log::error("Failed to delete certificate with ID {$id}: {$e->getMessage()}");
+            return false;
+        }
     }
 }

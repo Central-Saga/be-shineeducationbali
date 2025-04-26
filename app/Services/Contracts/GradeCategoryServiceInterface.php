@@ -1,49 +1,54 @@
 <?php
 
-namespace App\Services\Interfaces;
-
-use App\Models\GradeCategory;
-use Illuminate\Database\Eloquent\Collection;
+namespace App\Services\Contracts;
 
 interface GradeCategoryServiceInterface
 {
     /**
-     * Retrieve all grade categories.
+     * Mengambil semua kategori nilai.
      *
-     * @return Collection
+     * @return mixed
      */
-    public function getAllGradeCategories(): Collection;
+    public function getAllGradeCategories();
 
     /**
-     * Find a grade category by its ID.
+     * Mengambil kategori nilai berdasarkan ID.
      *
      * @param int $id
-     * @return GradeCategory
+     * @return mixed
      */
-    public function getGradeCategoryById(int $id): GradeCategory;
+    public function getGradeCategoryById($id);
 
     /**
-     * Create a new grade category.
+     * Mengambil kategori nilai berdasarkan nama.
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getGradeCategoryByName($name);
+
+    /**
+     * Membuat kategori nilai baru.
      *
      * @param array $data
-     * @return GradeCategory
+     * @return mixed
      */
-    public function createGradeCategory(array $data): GradeCategory;
+    public function createGradeCategory(array $data);
 
     /**
-     * Update an existing grade category.
+     * Memperbarui kategori nilai berdasarkan ID.
      *
      * @param int $id
      * @param array $data
-     * @return GradeCategory
+     * @return mixed
      */
-    public function updateGradeCategory(int $id, array $data): GradeCategory;
+    public function updateGradeCategory($id, array $data);
 
     /**
-     * Delete a grade category by its ID.
+     * Menghapus kategori nilai berdasarkan ID.
      *
      * @param int $id
-     * @return bool
+     * @return mixed
      */
-    public function deleteGradeCategory(int $id): bool;
+    public function deleteGradeCategory($id);
 }

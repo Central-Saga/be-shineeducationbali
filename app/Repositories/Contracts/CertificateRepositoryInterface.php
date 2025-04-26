@@ -1,49 +1,62 @@
 <?php
 
-namespace App\Repositories\Interfaces;
-
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\Certificate;
+namespace App\Repositories\Contracts;
 
 interface CertificateRepositoryInterface
 {
     /**
-     * Mendapatkan semua data certificate.
+     * Mengambil semua sertifikat.
      *
-     * @return Collection
+     * @return mixed
      */
-    public function getAll(): Collection;
+    public function getAllCertificates();
 
     /**
-     * Mendapatkan certificate berdasarkan ID.
+     * Mengambil sertifikat berdasarkan ID.
      *
      * @param int $id
-     * @return Certificate|null
+     * @return mixed
      */
-    public function findById(int $id): ?Certificate;
+    public function getCertificateById($id);
 
     /**
-     * Membuat certificate baru.
+     * Mengambil sertifikat berdasarkan ID siswa.
+     *
+     * @param int $studentId
+     * @return mixed
+     */
+    public function getCertificatesByStudentId($studentId);
+
+    /**
+     * Mengambil sertifikat berdasarkan ID program.
+     *
+     * @param int $programId
+     * @return mixed
+     */
+    public function getCertificatesByProgramId($programId);
+
+    /**
+     * Membuat sertifikat baru.
      *
      * @param array $data
-     * @return Certificate
+     * @return mixed
      */
-    public function create(array $data): Certificate;
+    public function createCertificate(array $data);
 
     /**
-     * Memperbarui certificate berdasarkan ID.
+     * Memperbarui sertifikat berdasarkan ID.
      *
      * @param int $id
      * @param array $data
-     * @return Certificate
+     * @return mixed
      */
-    public function update(int $id, array $data): Certificate;
+    public function updateCertificate($id, array $data);
 
     /**
-     * Menghapus certificate berdasarkan ID.
+     * Menghapus sertifikat berdasarkan ID.
      *
      * @param int $id
-     * @return bool
+     * @return mixed
      */
-    public function delete(int $id): bool;
+    public function deleteCertificate($id);
 }

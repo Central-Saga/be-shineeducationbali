@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CertificateStoreRequest;
 use App\Http\Requests\CertificateUpdateRequest;
 use App\Http\Resources\CertificateResource;
-use App\Services\Interfaces\CertificateServiceInterface;
+use App\Services\Contracts\CertificateServiceInterface;
 use Illuminate\Http\JsonResponse;
 
 class CertificateController extends Controller

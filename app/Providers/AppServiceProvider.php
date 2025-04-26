@@ -3,13 +3,14 @@
 namespace App\Providers;
 
 use App\Models\Student;
-use App\Repositories\Contracts\CertificateRepositoryInterface;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\Implementations\RoleService;
 use App\Services\Implementations\UserService;
+use App\Repositories\Eloquent\GradeRepository;
+use App\Services\Implementations\GradeService;
 use App\Repositories\Eloquent\ProgramRepository;
 use App\Repositories\Eloquent\StudentRepository;
 use App\Repositories\Eloquent\SubjectRepository;
@@ -17,10 +18,12 @@ use App\Repositories\Eloquent\TeacherRepository;
 use App\Services\Contracts\RoleServiceInterface;
 use App\Services\Contracts\UserServiceInterface;
 use App\Services\Implementations\ProgramService;
+use App\Services\Implementations\StudentService;
 use App\Services\Implementations\SubjectService;
 use App\Services\Implementations\TeacherService;
 use App\Repositories\Eloquent\MaterialRepository;
 use App\Repositories\Eloquent\ScheduleRepository;
+use App\Services\Contracts\GradeServiceInterface;
 use App\Services\Implementations\MaterialService;
 use App\Services\Implementations\ScheduleService;
 use App\Repositories\Eloquent\ClassRoomRepository;
@@ -33,42 +36,53 @@ use App\Services\Contracts\ProgramServiceInterface;
 use App\Services\Contracts\StudentServiceInterface;
 use App\Services\Contracts\SubjectServiceInterface;
 use App\Services\Contracts\TeacherServiceInterface;
+use App\Services\Implementations\AssignmentService;
 use App\Services\Implementations\PermissionService;
+use App\Repositories\Eloquent\CertificateRepository;
 use App\Services\Contracts\MaterialServiceInterface;
 use App\Services\Contracts\ScheduleServiceInterface;
+use App\Services\Implementations\CertificateService;
 use App\Services\Contracts\ClassRoomServiceInterface;
 use App\Services\Contracts\ClassTypeServiceInterface;
+use App\Repositories\Eloquent\GradeCategoryRepository;
+use App\Services\Contracts\AssignmentServiceInterface;
 use App\Services\Contracts\PermissionServiceInterface;
+use App\Services\Implementations\GradeCategoryService;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Eloquent\EducationLevelRepository;
+use App\Services\Contracts\CertificateServiceInterface;
 use App\Services\Implementations\EducationLevelService;
+use App\Repositories\Contracts\GradeRepositoryInterface;
+use App\Repositories\Eloquent\CertificateGradeRepository;
 use App\Repositories\Eloquent\MeetingFrequencyRepository;
+use App\Services\Contracts\GradeCategoryServiceInterface;
+use App\Services\Implementations\CertificateGradeService;
 use App\Services\Implementations\MeetingFrequencyService;
 use App\Repositories\Contracts\ProgramRepositoryInterface;
 use App\Repositories\Contracts\StudentRepositoryInterface;
 use App\Repositories\Contracts\SubjectRepositoryInterface;
 use App\Repositories\Contracts\TeacherRepositoryInterface;
+use App\Repositories\Eloquent\StudentAttendanceRepository;
 use App\Services\Contracts\EducationLevelServiceInterface;
+use App\Services\Implementations\StudentAttendanceService;
 use App\Repositories\Contracts\MaterialRepositoryInterface;
+
+// Tambahan import untuk ketiga service baru
 use App\Repositories\Contracts\ScheduleRepositoryInterface;
 use App\Repositories\Contracts\ClassRoomRepositoryInterface;
 use App\Repositories\Contracts\ClassTypeRepositoryInterface;
+use App\Services\Contracts\CertificateGradeServiceInterface;
 use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\AssignmentRepositoryInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
+use App\Services\Contracts\StudentAttendanceServiceInterface;
+use App\Repositories\Contracts\CertificateRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\GradeCategoryRepositoryInterface;
+use App\Repositories\Contracts\CertificateGradeRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
-use App\Repositories\Eloquent\CertificateRepository;
-use App\Repositories\Eloquent\GradeCategoryRepository;
-use App\Services\Contracts\CertificateServiceInterface;
-use App\Services\Contracts\GradeCategoryServiceInterface;
-use App\Services\Implementations\CertificateService;
-use App\Services\Implementations\GradeCategoryService;
-use App\Services\StudentService;
-use App\Services\Contracts\AssignmentServiceInterface;
-use App\Services\Implementations\AssignmentService;
+use App\Repositories\Contracts\StudentAttendanceRepositoryInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -121,9 +135,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(StudentRepositoryInterface::class, StudentRepository::class);
         $this->app->bind(StudentServiceInterface::class, StudentService::class);
 
-        // Bindding Grade Categories
+        // Binding Grade Categories
         $this->app->bind(GradeCategoryRepositoryInterface::class, GradeCategoryRepository::class);
-        $this->app->bind(GradeCategoryServiceInterface::class, GradeCategoryServicefe::class);
+        $this->app->bind(GradeCategoryServiceInterface::class, GradeCategoryService::class);
 
         // Binding Certificate
         $this->app->bind(CertificateRepositoryInterface::class, CertificateRepository::class);
@@ -140,6 +154,18 @@ class AppServiceProvider extends ServiceProvider
         // Binding Class Room
         $this->app->bind(ClassRoomRepositoryInterface::class, ClassRoomRepository::class);
         $this->app->bind(ClassRoomServiceInterface::class, ClassRoomService::class);
+        
+        // Binding Grade
+        $this->app->bind(GradeRepositoryInterface::class, GradeRepository::class);
+        $this->app->bind(GradeServiceInterface::class, GradeService::class);
+        
+        // Binding Certificate Grade
+        $this->app->bind(CertificateGradeRepositoryInterface::class, CertificateGradeRepository::class);
+        $this->app->bind(CertificateGradeServiceInterface::class, CertificateGradeService::class);
+        
+        // Binding Student Attendance
+        $this->app->bind(StudentAttendanceRepositoryInterface::class, StudentAttendanceRepository::class);
+        $this->app->bind(StudentAttendanceServiceInterface::class, StudentAttendanceService::class);
     }
 
     /**

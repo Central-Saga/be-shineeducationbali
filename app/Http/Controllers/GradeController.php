@@ -45,7 +45,7 @@ class GradeController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Nilai berhasil dibuat',
-            'data' => new GradeResource($grade),
+            'data' => $grade ? new GradeResource($grade) : null,
         ], 201);
     }
 
@@ -60,7 +60,7 @@ class GradeController extends Controller
         $grade = $this->gradeService->getGradeById($id);
         return response()->json([
             'status' => 'success',
-            'data' => new GradeResource($grade),
+            'data' => $grade ? new GradeResource($grade) : null,
         ], 200);
     }
 
@@ -78,7 +78,7 @@ class GradeController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Nilai berhasil diperbarui',
-            'data' => new GradeResource($grade),
+            'data' => $grade ? new GradeResource($grade) : null,
         ], 200);
     }
 

@@ -1,73 +1,124 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Implementations;
 
-use App\Repositories\Interfaces\CertificateRepositoryInterface;
-use App\Services\Interfaces\CertificateServiceInterface;
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\Certificate;
+use App\Services\Contracts\CertificateServiceInterface;
+use App\Repositories\Contracts\CertificateRepositoryInterface;
+use Illuminate\Support\Facades\Cache;
 
 class CertificateService implements CertificateServiceInterface
 {
-    protected $certificateRepository;
+    protected $repository;
 
-    public function __construct(CertificateRepositoryInterface $certificateRepository)
+    // Cache keys
+    const ALL_CERTIFICATES_CACHE_KEY = 'all_certificates';
+    const CERTIFICATE_BY_ID_CACHE_KEY = 'certificate_by_id_';
+    const CERTIFICATES_BY_STUDENT_CACHE_KEY = 'certificates_by_student_';
+    const CERTIFICATES_BY_PROGRAM_CACHE_KEY = 'certificates_by_program_';
+
+    public function __construct(CertificateRepositoryInterface $repository)
     {
-        $this->certificateRepository = $certificateRepository;
+        $this->repository = $repository;
     }
 
     /**
-     * Mengambil semua data certificate.
+     * Mengambil semua sertifikat.
      *
-     * @return Collection
+     * @return mixed
      */
-    public function getAllCertificates(): Collection
+    public function getAllCertificates()
     {
-        return $this->certificateRepository->getAll();
+        return Cache::remember(self::ALL_CERTIFICATES_CACHE_KEY, 3600, function () {
+            return $this->repository->getAllCertificates();
+        });
     }
 
     /**
-     * Mengambil certificate berdasarkan ID.
+     * Mengambil sertifikat berdasarkan ID.
      *
      * @param int $id
-     * @return Certificate
+     * @return mixed
      */
-    public function getCertificateById(int $id): Certificate
+    public function getCertificateById($id)
     {
-        return $this->certificateRepository->findById($id);
+        return Cache::remember(self::CERTIFICATE_BY_ID_CACHE_KEY . $id, 3600, function () use ($id) {
+            return $this->repository->getCertificateById($id);
+        });
     }
 
     /**
-     * Membuat certificate baru.
+     * Mengambil sertifikat berdasarkan ID siswa.
+     *
+     * @param int $studentId
+     * @return mixed
+     */
+    public function getCertificatesByStudentId($studentId)
+    {
+        return Cache::remember(self::CERTIFICATES_BY_STUDENT_CACHE_KEY . $studentId, 3600, function () use ($studentId) {
+            return $this->repository->getCertificatesByStudentId($studentId);
+        });
+    }
+
+    /**
+     * Mengambil sertifikat berdasarkan ID program.
+     *
+     * @param int $programId
+     * @return mixed
+     */
+    public function getCertificatesByProgramId($programId)
+    {
+        return Cache::remember(self::CERTIFICATES_BY_PROGRAM_CACHE_KEY . $programId, 3600, function () use ($programId) {
+            return $this->repository->getCertificatesByProgramId($programId);
+        });
+    }
+
+    /**
+     * Membuat sertifikat baru.
      *
      * @param array $data
-     * @return Certificate
+     * @return mixed
      */
-    public function createCertificate(array $data): Certificate
+    public function createCertificate(array $data)
     {
-        return $this->certificateRepository->create($data);
+        $result = $this->repository->createCertificate($data);
+        $this->clearCache();
+        return $result;
     }
 
     /**
-     * Memperbarui certificate berdasarkan ID.
+     * Memperbarui sertifikat berdasarkan ID.
      *
      * @param int $id
      * @param array $data
-     * @return Certificate
+     * @return mixed
      */
-    public function updateCertificate(int $id, array $data): Certificate
+    public function updateCertificate($id, array $data)
     {
-        return $this->certificateRepository->update($id, $data);
+        $result = $this->repository->updateCertificate($id, $data);
+        $this->clearCache();
+        return $result;
     }
 
     /**
-     * Menghapus certificate berdasarkan ID.
+     * Menghapus sertifikat berdasarkan ID.
      *
      * @param int $id
-     * @return bool
+     * @return mixed
      */
-    public function deleteCertificate(int $id): bool
+    public function deleteCertificate($id)
     {
-        return $this->certificateRepository->delete($id);
+        $result = $this->repository->deleteCertificate($id);
+        $this->clearCache();
+        return $result;
+    }
+
+    /**
+     * Membersihkan cache terkait sertifikat.
+     */
+    private function clearCache()
+    {
+        Cache::forget(self::ALL_CERTIFICATES_CACHE_KEY);
+        // Catatan: cache berdasarkan ID, student, dan program masih ada, 
+        // tapi akan diperbarui saat diminta lagi
     }
 }
