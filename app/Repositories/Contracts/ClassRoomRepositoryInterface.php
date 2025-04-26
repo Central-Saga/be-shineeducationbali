@@ -36,6 +36,20 @@ interface ClassRoomRepositoryInterface
     public function getClassRoomByStatus($status);
 
     /**
+     * Mengambil class room yang aktif.
+     *
+     * @return mixed
+     */
+    public function getActiveClassRooms();
+
+    /**
+     * Mengambil class room yang tidak aktif.
+     *
+     * @return mixed
+     */
+    public function getInactiveClassRooms();
+
+    /**
      * Membuat class room baru.
      *
      * @param array $data

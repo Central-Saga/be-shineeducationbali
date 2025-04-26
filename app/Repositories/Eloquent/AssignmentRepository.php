@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\Assignment;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\AssignmentRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AssignmentRepository implements AssignmentRepositoryInterface
 {
@@ -62,6 +63,46 @@ class AssignmentRepository implements AssignmentRepositoryInterface
     public function getAssignmentByStatus($status)
     {
         return $this->model->with('classRoom')->where('status', $status)->get();
+    }
+
+    /**
+     * Mengambil assignment berdasarkan status Belum Terselesaikan.
+     *
+     * @return mixed
+     */
+    public function getAssignmentByNotCompleted()
+    {
+        return $this->model->with('classRoom')->where('status', 'not_completed')->get();
+    }
+
+    /**
+     * Mengambil assignment berdasarkan status Terselesaikan.
+     *
+     * @return mixed
+     */
+    public function getAssignmentByCompleted()
+    {
+        return $this->model->with('classRoom')->where('status', 'completed')->get();
+    }
+
+    /**
+     * Mengambil assignment berdasarkan status Ditolak.
+     *
+     * @return mixed
+     */
+    public function getAssignmentByRejected()
+    {
+        return $this->model->with('classRoom')->where('status', 'rejected')->get();
+    }
+
+    /**
+     * Mengambil assignment berdasarkan status Dalam Pengajuan.
+     *
+     * @return mixed
+     */
+    public function getAssignmentByPending()
+    {
+        return $this->model->with('classRoom')->where('status', 'pending')->get();
     }
 
     /**

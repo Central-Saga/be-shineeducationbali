@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\ClassRoom;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\Contracts\ClassRoomRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ClassRoomRepository implements ClassRoomRepositoryInterface
 {
@@ -62,6 +63,26 @@ class ClassRoomRepository implements ClassRoomRepositoryInterface
     public function getClassRoomByStatus($status)
     {
         return $this->model->with('program', 'teacher', 'schedules', 'students', 'assignments')->where('status', $status)->get();
+    }
+
+    /**
+     * Mengambil class room yang aktif.
+     *
+     * @return mixed
+     */
+    public function getActiveClassRooms()
+    {
+        return $this->model->with('program', 'teacher', 'schedules', 'students', 'assignments')->where('status', 'active')->get();
+    }
+
+    /**
+     * Mengambil class room yang tidak aktif.
+     *
+     * @return mixed
+     */
+    public function getInactiveClassRooms()
+    {
+        return $this->model->with('program', 'teacher', 'schedules', 'students', 'assignments')->where('status', 'inactive')->get();
     }
 
     /**
