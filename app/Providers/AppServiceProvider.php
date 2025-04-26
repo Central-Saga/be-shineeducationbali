@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Student;
+use App\Repositories\Contracts\CertificateRepositoryInterface;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\RoleRepository;
@@ -15,7 +17,6 @@ use App\Repositories\Eloquent\TeacherRepository;
 use App\Services\Contracts\RoleServiceInterface;
 use App\Services\Contracts\UserServiceInterface;
 use App\Services\Implementations\ProgramService;
-use App\Services\Implementations\StudentService;
 use App\Services\Implementations\SubjectService;
 use App\Services\Implementations\TeacherService;
 use App\Repositories\Eloquent\MaterialRepository;
@@ -57,7 +58,15 @@ use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\AssignmentRepositoryInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
+use App\Repositories\Contracts\GradeCategoryRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
+use App\Repositories\Eloquent\CertificateRepository;
+use App\Repositories\Eloquent\GradeCategoryRepository;
+use App\Services\Contracts\CertificateServiceInterface;
+use App\Services\Contracts\GradeCategoryServiceInterface;
+use App\Services\Implementations\CertificateService;
+use App\Services\Implementations\GradeCategoryService;
+use App\Services\StudentService;
 use App\Services\Contracts\AssignmentServiceInterface;
 use App\Services\Implementations\AssignmentService;
 
@@ -112,6 +121,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(StudentRepositoryInterface::class, StudentRepository::class);
         $this->app->bind(StudentServiceInterface::class, StudentService::class);
 
+        // Bindding Grade Categories
+        $this->app->bind(GradeCategoryRepositoryInterface::class, GradeCategoryRepository::class);
+        $this->app->bind(GradeCategoryServiceInterface::class, GradeCategoryServicefe::class);
+
+        // Binding Certificate
+        $this->app->bind(CertificateRepositoryInterface::class, CertificateRepository::class);
+        $this->app->bind(CertificateServiceInterface::class, CertificateService::class);
+      
         // Binding Schedule
         $this->app->bind(ScheduleRepositoryInterface::class, ScheduleRepository::class);
         $this->app->bind(ScheduleServiceInterface::class, ScheduleService::class);
