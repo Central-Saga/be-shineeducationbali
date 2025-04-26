@@ -20,6 +20,8 @@ class GradeService implements GradeServiceInterface
     const GRADES_HIGH_SCORE_CACHE_KEY = 'grades_high_score';
     const GRADES_LOW_SCORE_CACHE_KEY = 'grades_low_score';
     const GRADES_RECENT_CACHE_KEY = 'grades_recent';
+    const GRADE_AVERAGE_STUDENT_MATERIAL_CACHE_KEY = 'grade_average_student_material';
+    const GRADE_AVERAGE_CLASS_MATERIAL_CACHE_KEY = 'grade_average_class_material';
 
     public function __construct(GradeRepositoryInterface $repository)
     {
@@ -143,6 +145,70 @@ class GradeService implements GradeServiceInterface
     {
         // Untuk range tanggal, kita tidak menggunakan cache karena parameter bisa bervariasi
         return $this->repository->getGradesByInputDateRange($startDate, $endDate);
+    }
+
+    /**
+     * Mendapatkan rata-rata nilai siswa pada mata pelajaran tertentu.
+     *
+     * @param int $studentId
+     * @param int $materialId
+     * @return float
+     */
+    public function getAverageGradeByStudentAndMaterial($studentId, $materialId)
+    {
+        $cacheKey = self::GRADE_AVERAGE_STUDENT_MATERIAL_CACHE_KEY . '_' . $studentId . '_' . $materialId;
+        return Cache::remember($cacheKey, 3600, function () use ($studentId, $materialId) {
+            // Ambil semua nilai siswa untuk mata pelajaran tertentu
+            $grades = $this->repository->getGradesByStudentIdAndMaterialId($studentId, $materialId);
+            
+            // Jika tidak ada nilai, return 0 atau null
+            if ($grades->isEmpty()) {
+                return 0;
+            }
+            
+            // Hitung rata-rata dari nilai yang ada
+            $totalScore = 0;
+            $count = 0;
+            
+            foreach ($grades as $grade) {
+                $totalScore += $grade->score;
+                $count++;
+            }
+            
+            return $count > 0 ? $totalScore / $count : 0;
+        });
+    }
+
+    /**
+     * Mendapatkan rata-rata nilai kelas pada mata pelajaran tertentu.
+     *
+     * @param int $classRoomId
+     * @param int $materialId
+     * @return float
+     */
+    public function getAverageGradeByClassRoomAndMaterial($classRoomId, $materialId)
+    {
+        $cacheKey = self::GRADE_AVERAGE_CLASS_MATERIAL_CACHE_KEY . '_' . $classRoomId . '_' . $materialId;
+        return Cache::remember($cacheKey, 3600, function () use ($classRoomId, $materialId) {
+            // Ambil semua nilai kelas untuk mata pelajaran tertentu
+            $grades = $this->repository->getGradesByClassRoomIdAndMaterialId($classRoomId, $materialId);
+            
+            // Jika tidak ada nilai, return 0 atau null
+            if ($grades->isEmpty()) {
+                return 0;
+            }
+            
+            // Hitung rata-rata dari nilai yang ada
+            $totalScore = 0;
+            $count = 0;
+            
+            foreach ($grades as $grade) {
+                $totalScore += $grade->score;
+                $count++;
+            }
+            
+            return $count > 0 ? $totalScore / $count : 0;
+        });
     }
 
     /**

@@ -30,10 +30,10 @@ interface StudentAttendanceServiceInterface
     /**
      * Mengambil data absensi berdasarkan ID kelas.
      *
-     * @param int $classRoomsId
+     * @param int $classRoomId
      * @return mixed
      */
-    public function getAttendancesByClassRoomsId($classRoomsId);
+    public function getAttendancesByClassRoomId($classRoomId);
 
     /**
      * Mengambil data absensi berdasarkan ID guru.
@@ -67,6 +67,14 @@ interface StudentAttendanceServiceInterface
      * @return mixed
      */
     public function getAttendancesByStatus($status);
+
+    /**
+     * Mendapatkan ringkasan kehadiran siswa (total hadir dan tidak hadir).
+     *
+     * @param int $studentId
+     * @return array
+     */
+    public function getStudentAttendanceSummary($studentId);
 
     /**
      * Membuat data absensi baru.

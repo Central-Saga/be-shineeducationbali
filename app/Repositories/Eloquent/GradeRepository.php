@@ -136,6 +136,36 @@ class GradeRepository implements GradeRepositoryInterface
     }
 
     /**
+     * Mengambil nilai berdasarkan ID siswa dan ID materi.
+     *
+     * @param int $studentId
+     * @param int $materialId
+     * @return mixed
+     */
+    public function getGradesByStudentIdAndMaterialId($studentId, $materialId)
+    {
+        return $this->model->where('student_id', $studentId)
+            ->where('material_id', $materialId)
+            ->with(['student', 'classRoom', 'material', 'gradeCategory', 'assignment'])
+            ->get();
+    }
+
+    /**
+     * Mengambil nilai berdasarkan ID kelas dan ID materi.
+     *
+     * @param int $classRoomId
+     * @param int $materialId
+     * @return mixed
+     */
+    public function getGradesByClassRoomIdAndMaterialId($classRoomId, $materialId)
+    {
+        return $this->model->where('class_rooms_id', $classRoomId)
+            ->where('material_id', $materialId)
+            ->with(['student', 'classRoom', 'material', 'gradeCategory', 'assignment'])
+            ->get();
+    }
+
+    /**
      * Membuat nilai baru.
      *
      * @param array $data

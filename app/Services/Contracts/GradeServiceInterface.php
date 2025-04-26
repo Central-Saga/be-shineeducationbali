@@ -78,6 +78,24 @@ interface GradeServiceInterface
     public function getGradesByInputDateRange($startDate, $endDate);
 
     /**
+     * Mendapatkan rata-rata nilai siswa pada mata pelajaran tertentu.
+     *
+     * @param int $studentId
+     * @param int $materialId
+     * @return float
+     */
+    public function getAverageGradeByStudentAndMaterial($studentId, $materialId);
+
+    /**
+     * Mendapatkan rata-rata nilai kelas pada mata pelajaran tertentu.
+     *
+     * @param int $classRoomId
+     * @param int $materialId
+     * @return float
+     */
+    public function getAverageGradeByClassRoomAndMaterial($classRoomId, $materialId);
+
+    /**
      * Membuat nilai baru.
      *
      * @param array $data

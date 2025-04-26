@@ -18,6 +18,7 @@ class StudentAttendanceService implements StudentAttendanceServiceInterface
     const ATTENDANCE_BY_DATE_CACHE_KEY = 'attendance_by_date';
     const ATTENDANCE_PRESENT_CACHE_KEY = 'attendance_present';
     const ATTENDANCE_ABSENT_CACHE_KEY = 'attendance_absent';
+    const ATTENDANCE_SUMMARY_CACHE_KEY = 'attendance_summary';
 
     public function __construct(StudentAttendanceRepositoryInterface $repository)
     {
@@ -64,14 +65,14 @@ class StudentAttendanceService implements StudentAttendanceServiceInterface
     /**
      * Mengambil data absensi berdasarkan ID kelas.
      *
-     * @param int $classRoomsId
+     * @param int $classRoomId
      * @return mixed
      */
-    public function getAttendancesByClassRoomsId($classRoomsId)
+    public function getAttendancesByClassRoomId($classRoomId)
     {
-        $cacheKey = self::ATTENDANCE_BY_CLASS_CACHE_KEY . '_' . $classRoomsId;
-        return Cache::remember($cacheKey, 3600, function () use ($classRoomsId) {
-            return $this->repository->getAttendancesByClassRoomsId($classRoomsId);
+        $cacheKey = self::ATTENDANCE_BY_CLASS_CACHE_KEY . '_' . $classRoomId;
+        return Cache::remember($cacheKey, 3600, function () use ($classRoomId) {
+            return $this->repository->getAttendancesByClassRoomId($classRoomId);
         });
     }
 
@@ -128,6 +129,59 @@ class StudentAttendanceService implements StudentAttendanceServiceInterface
         
         return Cache::remember($cacheKey, 3600, function () use ($status) {
             return $this->repository->getAttendancesByStatus($status);
+        });
+    }
+
+    /**
+     * Mendapatkan ringkasan kehadiran siswa (total hadir dan tidak hadir).
+     *
+     * @param int $studentId
+     * @return array
+     */
+    public function getStudentAttendanceSummary($studentId)
+    {
+        $cacheKey = self::ATTENDANCE_SUMMARY_CACHE_KEY . '_' . $studentId;
+        return Cache::remember($cacheKey, 3600, function () use ($studentId) {
+            // Mengambil semua absensi siswa
+            $attendances = $this->repository->getAttendancesByStudentId($studentId);
+            
+            // Inisialisasi counter
+            $present = 0;
+            $absent = 0;
+            $late = 0;
+            $excused = 0;
+            $total = count($attendances);
+            
+            // Menghitung berdasarkan status
+            foreach ($attendances as $attendance) {
+                switch (strtolower($attendance->status)) {
+                    case 'present':
+                        $present++;
+                        break;
+                    case 'absent':
+                        $absent++;
+                        break;
+                    case 'late':
+                        $late++;
+                        break;
+                    case 'excused':
+                        $excused++;
+                        break;
+                }
+            }
+            
+            // Menghitung persentase kehadiran jika ada data
+            $attendancePercentage = $total > 0 ? round(($present + $late) / $total * 100, 2) : 0;
+            
+            // Mengembalikan ringkasan dalam bentuk array
+            return [
+                'total_attendances' => $total,
+                'present' => $present,
+                'absent' => $absent,
+                'late' => $late,
+                'excused' => $excused,
+                'attendance_percentage' => $attendancePercentage,
+            ];
         });
     }
 

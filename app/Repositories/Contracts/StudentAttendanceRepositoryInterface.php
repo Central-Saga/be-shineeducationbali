@@ -30,10 +30,10 @@ interface StudentAttendanceRepositoryInterface
     /**
      * Mengambil data absensi berdasarkan ID kelas.
      *
-     * @param int $classRoomsId
+     * @param int $classRoomId
      * @return mixed
      */
-    public function getAttendancesByClassRoomsId($classRoomsId);
+    public function getAttendancesByClassRoomId($classRoomId);
 
     /**
      * Mengambil data absensi berdasarkan ID guru.

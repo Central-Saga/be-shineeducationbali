@@ -58,12 +58,12 @@ class StudentAttendanceRepository implements StudentAttendanceRepositoryInterfac
     /**
      * Mengambil data absensi berdasarkan ID kelas.
      *
-     * @param int $classRoomsId
+     * @param int $classRoomId
      * @return mixed
      */
-    public function getAttendancesByClassRoomsId($classRoomsId)
+    public function getAttendancesByClassRoomId($classRoomId)
     {
-        return $this->model->where('class_rooms_id', $classRoomsId)
+        return $this->model->where('class_rooms_id', $classRoomId)
             ->with(['student', 'classRoom', 'teacher'])
             ->get();
     }

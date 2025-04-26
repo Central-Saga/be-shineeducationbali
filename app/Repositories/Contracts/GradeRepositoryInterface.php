@@ -78,6 +78,24 @@ interface GradeRepositoryInterface
     public function getGradesByInputDateRange($startDate, $endDate);
 
     /**
+     * Mengambil nilai berdasarkan ID siswa dan ID materi.
+     *
+     * @param int $studentId
+     * @param int $materialId
+     * @return mixed
+     */
+    public function getGradesByStudentIdAndMaterialId($studentId, $materialId);
+
+    /**
+     * Mengambil nilai berdasarkan ID kelas dan ID materi.
+     *
+     * @param int $classRoomId
+     * @param int $materialId
+     * @return mixed
+     */
+    public function getGradesByClassRoomIdAndMaterialId($classRoomId, $materialId);
+
+    /**
      * Membuat nilai baru.
      *
      * @param array $data
