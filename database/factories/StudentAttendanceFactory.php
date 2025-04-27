@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\ClassType;
+use App\Models\ClassRoom;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\StudentAttendance;
@@ -28,8 +28,8 @@ class StudentAttendanceFactory extends Factory
     public function definition(): array
     {
         return [
-            'class_id' => function () {
-                return ClassType::inRandomOrder()->first()->id ?? ClassType::factory()->create()->id;
+            'class_rooms_id' => function () {
+                return ClassRoom::inRandomOrder()->first()->id ?? ClassRoom::factory()->create()->id;
             },
             'student_id' => function () {
                 return Student::inRandomOrder()->first()->id ?? Student::factory()->create()->id;

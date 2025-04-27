@@ -2,11 +2,11 @@
 
 namespace App\Services\Implementations;
 
-use App\Services\Contracts\AssigmentServiceInterface;
-use App\Repositories\Contracts\AssigmentRepositoryInterface;
+use App\Services\Contracts\AssignmentServiceInterface;
+use App\Repositories\Contracts\AssignmentRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
 
-class AssignmentService implements AssigmentServiceInterface
+class AssignmentService implements AssignmentServiceInterface
 {
     protected $repository;
 
@@ -16,7 +16,7 @@ class AssignmentService implements AssigmentServiceInterface
     const ASSIGNMENTS_REJECTED_CACHE_KEY = 'assignments_rejected';
     const ASSIGNMENTS_PENDING_CACHE_KEY = 'assignments_pending';
 
-    public function __construct(AssigmentRepositoryInterface $repository)
+    public function __construct(AssignmentRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

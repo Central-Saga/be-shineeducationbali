@@ -20,11 +20,17 @@ class AssignmentFactory extends Factory
      */
     public function definition(): array
     {
+        // Cek dan buat data jika tidak tersedia
+        $student = Student::count() > 0 ? Student::inRandomOrder()->first() : Student::factory()->create();
+        $classRoom = ClassRoom::count() > 0 ? ClassRoom::inRandomOrder()->first() : ClassRoom::factory()->create();
+        $teacher = Teacher::count() > 0 ? Teacher::inRandomOrder()->first() : Teacher::factory()->create();
+        $material = Material::count() > 0 ? Material::inRandomOrder()->first() : Material::factory()->create();
+
         return [
-            'student_id' => Student::all()->random()->id,
-            'class_room_id' => ClassRoom::all()->random()->id,
-            'teacher_id' => Teacher::all()->random()->id,
-            'material_id' => Material::all()->random()->id,
+            'student_id' => $student->id,
+            'class_room_id' => $classRoom->id,
+            'teacher_id' => $teacher->id,
+            'material_id' => $material->id,
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
             'due_date' => fake()->dateTimeBetween('now', '+1 year'),

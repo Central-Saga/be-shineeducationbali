@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Schedule;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repositories\Contracts\ScheduleRepositoryInterface;
 
 class ScheduleRepository implements ScheduleRepositoryInterface

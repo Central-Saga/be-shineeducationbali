@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\StudentResource;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
-use App\Http\Resources\StudentResource;
 use App\Services\Contracts\StudentServiceInterface;
-use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
@@ -50,7 +51,7 @@ class StudentController extends Controller
      * Menyimpan data student baru.
      *
      * @param StoreStudentRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Resources\Json\JsonResource|\Illuminate\Http\JsonResponse
      */
     public function store(StoreStudentRequest $request)
     {
@@ -65,7 +66,7 @@ class StudentController extends Controller
      * Menampilkan data student berdasarkan ID.
      *
      * @param string $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Resources\Json\JsonResource|\Illuminate\Http\JsonResponse
      */
     public function show(string $id)
     {
@@ -81,7 +82,7 @@ class StudentController extends Controller
      *
      * @param UpdateStudentRequest $request
      * @param string $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Resources\Json\JsonResource|\Illuminate\Http\JsonResponse
      */
     public function update(UpdateStudentRequest $request, string $id)
     {

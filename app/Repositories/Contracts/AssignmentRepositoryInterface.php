@@ -36,6 +36,34 @@ interface AssignmentRepositoryInterface
     public function getAssignmentByStatus($status);
 
     /**
+     * Mengambil assignment berdasarkan status Belum Terselesaikan.
+     *
+     * @return mixed
+     */
+    public function getAssignmentByNotCompleted();
+
+    /**
+     * Mengambil assignment berdasarkan status Terselesaikan.
+     *
+     * @return mixed
+     */
+    public function getAssignmentByCompleted();
+
+    /**
+     * Mengambil assignment berdasarkan status Ditolak.
+     *
+     * @return mixed
+     */
+    public function getAssignmentByRejected();
+
+    /**
+     * Mengambil assignment berdasarkan status Dalam Pengajuan.
+     *
+     * @return mixed
+     */
+    public function getAssignmentByPending();
+
+    /**
      * Membuat assignment baru.
      *
      * @param array $data

@@ -73,4 +73,37 @@ interface ClassRoomServiceInterface
      * @return mixed
      */
     public function deleteClassRoom($id);
+    
+    /**
+     * Menghapus semua cache class room
+     *
+     * @return void
+     */
+    public function clearClassRoomCaches();
+    
+    /**
+     * Menambahkan siswa ke dalam classroom
+     *
+     * @param int $classRoomId
+     * @param int $studentId
+     * @return mixed
+     */
+    public function attachStudentToClassRoom($classRoomId, $studentId);
+    
+    /**
+     * Menghapus siswa dari classroom
+     *
+     * @param int $classRoomId
+     * @param int $studentId
+     * @return mixed
+     */
+    public function detachStudentFromClassRoom($classRoomId, $studentId);
+    
+    /**
+     * Mengambil daftar siswa dalam classroom
+     *
+     * @param int $classRoomId
+     * @return mixed
+     */
+    public function getStudentsInClassRoom($classRoomId);
 }

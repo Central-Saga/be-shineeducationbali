@@ -17,7 +17,7 @@ class CertificateGrade extends Model
      *
      * @var string
      */
-    protected $table = 'certificate_grade';
+    protected $table = 'certificate_grades';
 
     /**
      * Atribut yang dapat diisi.

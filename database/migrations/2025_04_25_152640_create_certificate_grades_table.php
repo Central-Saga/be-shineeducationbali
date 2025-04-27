@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('certificate_grades', function (Blueprint $table) {
             $table->id();
             $table->foreignId('certificate_id')->constrained('certificates');
-            $table->foreignId('grade_id')->constrained('grade');
+            $table->foreignId('grade_id')->constrained('grades');
             $table->timestamps();
         });
     }
