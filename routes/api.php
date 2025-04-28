@@ -20,6 +20,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\EducationLevelController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\MeetingFrequencyController;
+use App\Http\Controllers\TestimonialController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -108,6 +109,12 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::middleware('permission:mengelola jobApplications')->group(function () {
         Route::apiResource('job-applications', JobApplicationController::class);
         Route::patch('job-applications/{id}/status', [JobApplicationController::class, 'updateStatus']);
+    // Testimonials
+    Route::middleware('permission:mengelola testimonials')->group(function () {
+        Route::apiResource('testimonials', TestimonialController::class);
+        Route::get('testimonials/by-name', [TestimonialController::class, 'getByName']);
+    });
+
 });
 
 Route::get('/user', function (Request $request) {

@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
             ArticleSeeder::class,
             JobVacancySeeder::class,
             JobApplicationSeeder::class,
+            TestimonialSeeder::class,
         ]);
     }
 }

@@ -70,6 +70,10 @@ use App\Services\Contracts\MeetingFrequencyServiceInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
+use App\Repositories\Contracts\TestimonialRepositoryInterface;
+use App\Repositories\TestimonialRepository;
+use App\Services\Contracts\TestimonialServiceInterface;
+use App\Services\TestimonialService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -141,6 +145,10 @@ class AppServiceProvider extends ServiceProvider
         // Binding JobApplication
         $this->app->bind(JobApplicationRepositoryInterface::class, JobApplicationRepository::class);
         $this->app->bind(JobApplicationServiceInterface::class, JobApplicationService::class);
+
+        // Binding Testimonial
+        $this->app->bind(TestimonialRepositoryInterface::class, TestimonialRepository::class);
+        $this->app->bind(TestimonialServiceInterface::class, TestimonialService::class);
     }
 
     /**
