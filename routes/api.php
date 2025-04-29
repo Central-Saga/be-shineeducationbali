@@ -22,6 +22,8 @@ use App\Http\Controllers\EducationLevelController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\MeetingFrequencyController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TransactionDetailController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -124,6 +126,11 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::middleware('permission:mengelola transactions')->group(function () {
         Route::apiResource('transactions', TransactionController::class);
         Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus']);
+    });
+    // Transaction Details
+    Route::middleware('permission:mengelola transactionDetails')->group(function () {
+        Route::apiResource('transaction-details', TransactionDetailController::class);
+        Route::patch('transaction-details/{id}/type', [TransactionDetailController::class, 'updateType']);
     });
 });
 

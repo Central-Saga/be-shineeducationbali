@@ -73,13 +73,18 @@ use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
 use App\Repositories\Contracts\TestimonialRepositoryInterface;
+use App\Repositories\Contracts\TransactionDetailRepositoryInterface;
+use App\Repositories\Eloquent\TransactionDetailRepository;
 use App\Repositories\TestimonialRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\TransactionRepositoryInterface;
 use App\Services\BankAccountService;
 use App\Services\BankAccountServiceInterface;
 use App\Services\Contracts\TestimonialServiceInterface;
+use App\Services\Contracts\TransactionDetailServiceInterface;
+use App\Services\Implementations\TransactionDetailService;
 use App\Services\TestimonialService;
+use App\Services\TransactionDetailServiceInterface as ServicesTransactionDetailServiceInterface;
 use App\Services\TransactionService;
 use App\Services\TransactionServiceInterface;
 
@@ -165,6 +170,10 @@ class AppServiceProvider extends ServiceProvider
         // Binding Transaction
         $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
         $this->app->bind(TransactionServiceInterface::class, TransactionService::class);
+
+        // Binding Transaction Detail
+        $this->app->bind(TransactionDetailRepositoryInterface::class, TransactionDetailRepository::class);
+        $this->app->bind(ServicesTransactionDetailServiceInterface::class, TransactionDetailService::class);
 
     }
 

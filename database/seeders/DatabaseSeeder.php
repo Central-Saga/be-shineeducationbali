@@ -40,6 +40,9 @@ class DatabaseSeeder extends Seeder
             JobVacancySeeder::class,
             JobApplicationSeeder::class,
             TestimonialSeeder::class,
+            BankAccountSeeder::class,
+            TransactionSeeder::class,
+            TransactionDetailSeeder::class,
         ]);
     }
 }
