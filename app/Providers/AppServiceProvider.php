@@ -74,10 +74,14 @@ use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
 use App\Repositories\Contracts\TestimonialRepositoryInterface;
 use App\Repositories\TestimonialRepository;
+use App\Repositories\TransactionRepository;
+use App\Repositories\TransactionRepositoryInterface;
 use App\Services\BankAccountService;
 use App\Services\BankAccountServiceInterface;
 use App\Services\Contracts\TestimonialServiceInterface;
 use App\Services\TestimonialService;
+use App\Services\TransactionService;
+use App\Services\TransactionServiceInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -157,6 +161,11 @@ class AppServiceProvider extends ServiceProvider
         // Binding Bank Account
         $this->app->bind(BankAccountRepositoryInterface::class, BankAccountRepository::class);
         $this->app->bind(BankAccountServiceInterface::class, BankAccountService::class);
+
+        // Binding Transaction
+        $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
+        $this->app->bind(TransactionServiceInterface::class, TransactionService::class);
+
     }
 
     /**

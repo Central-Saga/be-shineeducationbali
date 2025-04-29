@@ -120,7 +120,11 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
         Route::apiResource('bank-accounts', BankAccountController::class);
         Route::patch('bank-accounts/{id}/status', [BankAccountController::class, 'updateStatus']);
     });
-
+    // Transactions
+    Route::middleware('permission:mengelola transactions')->group(function () {
+        Route::apiResource('transactions', TransactionController::class);
+        Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus']);
+    });
 });
 
 Route::get('/user', function (Request $request) {
