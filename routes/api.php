@@ -8,6 +8,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
@@ -113,6 +114,11 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::middleware('permission:mengelola testimonials')->group(function () {
         Route::apiResource('testimonials', TestimonialController::class);
         Route::get('testimonials/by-name', [TestimonialController::class, 'getByName']);
+    });
+    // Bank Accounts
+    Route::middleware('permission:mengelola bankAccounts')->group(function () {
+        Route::apiResource('bank-accounts', BankAccountController::class);
+        Route::patch('bank-accounts/{id}/status', [BankAccountController::class, 'updateStatus']);
     });
 
 });

@@ -25,6 +25,8 @@ use App\Repositories\JobApplicationRepository;
 use App\Repositories\LeaveRepositoryInterface;
 use App\Services\NotificationServiceInterface;
 use App\Repositories\ArticleRepositoryInterface;
+use App\Repositories\BankAccountRepository;
+use App\Repositories\BankAccountRepositoryInterface;
 use App\Repositories\Eloquent\ProgramRepository;
 use App\Repositories\Eloquent\StudentRepository;
 use App\Repositories\Eloquent\SubjectRepository;
@@ -72,6 +74,8 @@ use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
 use App\Repositories\Contracts\TestimonialRepositoryInterface;
 use App\Repositories\TestimonialRepository;
+use App\Services\BankAccountService;
+use App\Services\BankAccountServiceInterface;
 use App\Services\Contracts\TestimonialServiceInterface;
 use App\Services\TestimonialService;
 
@@ -149,6 +153,10 @@ class AppServiceProvider extends ServiceProvider
         // Binding Testimonial
         $this->app->bind(TestimonialRepositoryInterface::class, TestimonialRepository::class);
         $this->app->bind(TestimonialServiceInterface::class, TestimonialService::class);
+
+        // Binding Bank Account
+        $this->app->bind(BankAccountRepositoryInterface::class, BankAccountRepository::class);
+        $this->app->bind(BankAccountServiceInterface::class, BankAccountService::class);
     }
 
     /**
