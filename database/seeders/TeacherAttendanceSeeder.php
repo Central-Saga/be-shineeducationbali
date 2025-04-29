@@ -6,6 +6,7 @@ use App\Models\ClassRoom;
 use App\Models\Teacher;
 use App\Models\TeacherAttendance;
 use Carbon\Carbon;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TeacherAttendanceSeeder extends Seeder
@@ -15,63 +16,61 @@ class TeacherAttendanceSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get existing teachers and classrooms
+        // Get all teachers and classes
         $teachers = Teacher::all();
         $classRooms = ClassRoom::all();
 
-        if ($teachers->count() === 0 || $classRooms->count() === 0) {
-            // Create sample data if none exists
-            TeacherAttendance::factory(50)->create();
-            TeacherAttendance::factory(10)->noCheckout()->create();
-            TeacherAttendance::factory(5)->notAttended()->create();
-        } else {
-            // Create attendances for existing teachers and classrooms
-            $startDate = Carbon::now()->subMonths(2);
-            $endDate = Carbon::now();
+        if ($teachers->isEmpty() || $classRooms->isEmpty()) {
+            echo "No teachers or classes found. Skipping TeacherAttendance seeding.\n";
+            return;
+        }
 
-            foreach ($teachers as $teacher) {
-                // Get classrooms where this teacher teaches
-                $teacherClassrooms = $classRooms->random(min(3, $classRooms->count()));
-                
-                foreach ($teacherClassrooms as $classroom) {
-                    // Create attendance records for past dates
-                    for ($date = clone $startDate; $date->lte($endDate); $date->addDays(rand(1, 7))) {
-                        // 80% chance to have a complete attendance record
-                        $randomStatus = rand(1, 100);
-                        
-                        if ($randomStatus <= 80) {
-                            // Complete attendance
-                            $checkIn = (clone $date)->setHour(rand(8, 10))->setMinute(rand(0, 59));
-                            $checkOut = (clone $checkIn)->addHours(rand(1, 4));
-                            
-                            TeacherAttendance::create([
-                                'class_id' => $classroom->id,
-                                'teacher_id' => $teacher->id,
-                                'attendance_date' => $date->toDateString(),
-                                'check_in' => $checkIn,
-                                'check_out' => $checkOut,
-                            ]);
-                        } elseif ($randomStatus <= 95) {
-                            // No checkout
-                            $checkIn = (clone $date)->setHour(rand(8, 10))->setMinute(rand(0, 59));
-                            
-                            TeacherAttendance::create([
-                                'class_id' => $classroom->id,
-                                'teacher_id' => $teacher->id,
-                                'attendance_date' => $date->toDateString(),
-                                'check_in' => $checkIn,
-                                'check_out' => null,
-                            ]);
-                        } else {
-                            // Not attended
-                            TeacherAttendance::create([
-                                'class_id' => $classroom->id,
-                                'teacher_id' => $teacher->id,
-                                'attendance_date' => $date->toDateString(),
-                                'check_in' => null,
-                                'check_out' => null,
-                            ]);
-                        }
+        // Generate attendance records for the past 30 days
+        $startDate = Carbon::now()->subDays(30);
+        $endDate = Carbon::now();
+
+        foreach ($teachers as $teacher) {
+            // Find classes this teacher is assigned to
+            $teacherClasses = $classRooms->where('teacher_id', $teacher->id);
+            
+            if ($teacherClasses->isEmpty()) {
+                // Use random classes if teacher has no assigned classes
+                $teacherClasses = $classRooms->random(min(3, $classRooms->count()));
+            }
+
+            foreach ($teacherClasses as $classRoom) {
+                // Generate 10-15 attendance records per teacher per class
+                $attendanceDates = [];
+                for ($i = 0; $i < rand(10, 15); $i++) {
+                    // Generate a random date within the range
+                    $randomDay = rand(0, 30);
+                    $attendanceDate = (clone $startDate)->addDays($randomDay);
+                    $dateString = $attendanceDate->format('Y-m-d');
+                    
+                    // Skip if we already have attendance for this date to avoid duplicates
+                    if (in_array($dateString, $attendanceDates)) {
+                        continue;
+                    }
+                    
+                    $attendanceDates[] = $dateString;
+
+                    // Determine status with weighted probabilities
+                    $statusRoll = rand(1, 100);
+                    if ($statusRoll <= 85) {
+                        // 85% present
+                        TeacherAttendance::factory()->create([
+                            'teacher_id' => $teacher->id,
+                            'class_rooms_id' => $classRoom->id,
+                            'attendance_date' => $dateString,
+                            'status' => TeacherAttendance::STATUS_PRESENT,
+                        ]);
+                    } else {
+                        // 15% absent
+                        TeacherAttendance::factory()->absent()->create([
+                            'teacher_id' => $teacher->id,
+                            'class_rooms_id' => $classRoom->id,
+                            'attendance_date' => $dateString,
+                        ]);
                     }
                 }
             }

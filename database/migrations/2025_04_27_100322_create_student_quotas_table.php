@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('student_quotas', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('student_id');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->unsignedBigInteger('program_id');
+            $table->foreign('program_id')->references('id')->on('programs')->onDelete('cascade');
+            $table->date('period');
+            $table->unsignedInteger('sessions_paid');
+            $table->unsignedInteger('sessions_used');
+            $table->unsignedInteger('sessions_remaining');
+            $table->unsignedInteger('sessions_accumulated');
             $table->timestamps();
         });
     }

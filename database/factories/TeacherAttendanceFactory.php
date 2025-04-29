@@ -24,43 +24,46 @@ class TeacherAttendanceFactory extends Factory
     public function definition(): array
     {
         $attendanceDate = $this->faker->dateTimeBetween('-3 months', 'now');
-        $checkIn = (clone $attendanceDate)->modify('+' . $this->faker->numberBetween(8, 10) . ' hours');
-        $checkOut = (clone $checkIn)->modify('+' . $this->faker->numberBetween(1, 4) . ' hours');
+        $checkIn = $this->faker->time('H:i:s');
+        $checkOut = $this->faker->time('H:i:s', $checkIn);
+        $statuses = ['present', 'absent'];
         
         return [
-            'class_id' => ClassRoom::factory(),
+            'class_rooms_id' => ClassRoom::factory(),
             'teacher_id' => Teacher::factory(),
             'attendance_date' => $attendanceDate,
             'check_in' => $checkIn,
             'check_out' => $checkOut,
+            'status' => $this->faker->randomElement($statuses),
         ];
     }
 
     /**
-     * Indicate that the teacher has not checked out.
+     * Indicate that the teacher is present.
      *
      * @return static
      */
-    public function noCheckout(): static
+    public function present(): static
     {
         return $this->state(function (array $attributes) {
             return [
-                'check_out' => null,
+                'status' => TeacherAttendance::STATUS_PRESENT,
             ];
         });
     }
 
     /**
-     * Indicate that the teacher has not attended yet.
+     * Indicate that the teacher is absent.
      *
      * @return static
      */
-    public function notAttended(): static
+    public function absent(): static
     {
         return $this->state(function (array $attributes) {
             return [
                 'check_in' => null,
                 'check_out' => null,
+                'status' => TeacherAttendance::STATUS_ABSENT,
             ];
         });
     }

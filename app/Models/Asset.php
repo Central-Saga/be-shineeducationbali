@@ -21,8 +21,8 @@ class Asset extends Model
         'upload_date',
         'description',
         'storage_type',
-        'entity_id',
-        'entity_type',
+        'assetable_id',
+        'assetable_type',
     ];
 
     /**
@@ -38,13 +38,13 @@ class Asset extends Model
     /**
      * Get the parent entity that owns the asset.
      */
-    public function entity(): MorphTo
+    public function assetable(): MorphTo
     {
         return $this->morphTo();
     }
 
     /**
-     * Scope a query to only include assets of a specific entity type.
+     * Scope a query to only include assets of a specific assetable type.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $type
@@ -52,7 +52,7 @@ class Asset extends Model
      */
     public function scopeOfType($query, string $type)
     {
-        return $query->where('entity_type', $type);
+        return $query->where('assetable_type', $type);
     }
 
     /**

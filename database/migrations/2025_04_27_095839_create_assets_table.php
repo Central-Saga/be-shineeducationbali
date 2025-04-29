@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
+            $table->string('file_path', 255);
+            $table->integer('size_kb');
+            $table->dateTime('upload_date');
+            $table->string('description', 150)->nullable();
+            $table->enum('storage_type', ['local', 'cloud', 's3', 'google_drive']);
+            $table->morphs('assetable');
             $table->timestamps();
         });
     }

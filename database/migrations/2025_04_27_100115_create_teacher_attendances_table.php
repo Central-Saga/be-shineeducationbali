@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('teacher_attendances', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('teacher_id');
+            $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
+            $table->unsignedBigInteger('class_rooms_id');
+            $table->foreign('class_rooms_id')->references('id')->on('class_rooms')->onDelete('cascade');
+            $table->date('attendance_date');
+            $table->time('check_in')->nullable();
+            $table->time('check_out')->nullable();
+            $table->enum('status', ['present', 'absent']);
             $table->timestamps();
         });
     }

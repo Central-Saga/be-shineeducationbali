@@ -27,34 +27,23 @@ class AssetFactory extends Factory
     public function definition(): array
     {
         $storageTypes = ['local', 'cloud', 's3', 'google_drive'];
-        $entityTypes = ['student', 'teacher', 'program', 'assignment', 'material'];
+        $assetableTypes = [
+            Student::class => 'App\\Models\\Student', 
+            Teacher::class => 'App\\Models\\Teacher', 
+            Program::class => 'App\\Models\\Program', 
+            Assignment::class => 'App\\Models\\Assignment', 
+            Material::class => 'App\\Models\\Material'
+        ];
         
-        $selectedEntityType = $this->faker->randomElement($entityTypes);
-        $entityId = null;
+        $selectedAssetableClass = $this->faker->randomElement(array_keys($assetableTypes));
+        $assetableType = $assetableTypes[$selectedAssetableClass];
+        $assetableId = $selectedAssetableClass::inRandomOrder()->first()?->id ?? 1;
         
-        // Generate valid entity ID based on the entity type
-        switch ($selectedEntityType) {
-            case 'student':
-                $entityId = Student::inRandomOrder()->first()?->id ?? 1;
-                break;
-            case 'teacher':
-                $entityId = Teacher::inRandomOrder()->first()?->id ?? 1;
-                break;
-            case 'program':
-                $entityId = Program::inRandomOrder()->first()?->id ?? 1;
-                break;
-            case 'assignment':
-                $entityId = Assignment::inRandomOrder()->first()?->id ?? 1;
-                break;
-            case 'material':
-                $entityId = Material::inRandomOrder()->first()?->id ?? 1;
-                break;
-        }
-        
-        // Generate file path based on entity type
+        // Generate file path based on assetable type
         $fileExtensions = ['pdf', 'jpg', 'png', 'doc', 'xlsx', 'zip', 'mp4', 'pptx'];
         $randomFileName = $this->faker->uuid . '.' . $this->faker->randomElement($fileExtensions);
-        $filePath = $selectedEntityType . '/' . $entityId . '/' . $randomFileName;
+        $assetableName = strtolower(class_basename($selectedAssetableClass));
+        $filePath = $assetableName . '/' . $assetableId . '/' . $randomFileName;
         
         return [
             'file_path' => $filePath,
@@ -62,24 +51,24 @@ class AssetFactory extends Factory
             'upload_date' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'description' => $this->faker->sentence(8),
             'storage_type' => $this->faker->randomElement($storageTypes),
-            'entity_id' => $entityId,
-            'entity_type' => $selectedEntityType,
+            'assetable_id' => $assetableId,
+            'assetable_type' => $assetableType,
         ];
     }
 
     /**
-     * Indicate that the asset is for a specific entity type.
+     * Indicate that the asset is for a specific assetable entity.
      *
-     * @param string $entityType
-     * @param int $entityId
+     * @param string $assetableType
+     * @param int $assetableId
      * @return static
      */
-    public function forEntity(string $entityType, int $entityId): static
+    public function forAssetable(string $assetableType, int $assetableId): static
     {
-        return $this->state(function (array $attributes) use ($entityType, $entityId) {
+        return $this->state(function (array $attributes) use ($assetableType, $assetableId) {
             return [
-                'entity_type' => $entityType,
-                'entity_id' => $entityId,
+                'assetable_type' => $assetableType,
+                'assetable_id' => $assetableId,
             ];
         });
     }

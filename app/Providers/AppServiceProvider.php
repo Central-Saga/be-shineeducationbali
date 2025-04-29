@@ -67,8 +67,6 @@ use App\Repositories\Eloquent\StudentAttendanceRepository;
 use App\Services\Contracts\EducationLevelServiceInterface;
 use App\Services\Implementations\StudentAttendanceService;
 use App\Repositories\Contracts\MaterialRepositoryInterface;
-
-// Tambahan import untuk ketiga service baru
 use App\Repositories\Contracts\ScheduleRepositoryInterface;
 use App\Repositories\Contracts\ClassRoomRepositoryInterface;
 use App\Repositories\Contracts\ClassTypeRepositoryInterface;
@@ -78,6 +76,14 @@ use App\Repositories\Contracts\AssignmentRepositoryInterface;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Services\Contracts\StudentAttendanceServiceInterface;
 use App\Repositories\Contracts\CertificateRepositoryInterface;
+use App\Repositories\Eloquent\StudentQuotaRepository;
+use App\Repositories\Eloquent\TeacherAttendanceRepository;
+use App\Services\Implementations\StudentQuotaService;
+use App\Services\Implementations\TeacherAttendanceService;
+use App\Repositories\Contracts\StudentQuotaRepositoryInterface;
+use App\Repositories\Contracts\TeacherAttendanceRepositoryInterface;
+use App\Services\Contracts\StudentQuotaServiceInterface;
+use App\Services\Contracts\TeacherAttendanceServiceInterface;
 use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\GradeCategoryRepositoryInterface;
 use App\Repositories\Contracts\CertificateGradeRepositoryInterface;
@@ -166,6 +172,14 @@ class AppServiceProvider extends ServiceProvider
         // Binding Student Attendance
         $this->app->bind(StudentAttendanceRepositoryInterface::class, StudentAttendanceRepository::class);
         $this->app->bind(StudentAttendanceServiceInterface::class, StudentAttendanceService::class);
+
+        // Binding Student Quota
+        $this->app->bind(StudentQuotaRepositoryInterface::class, StudentQuotaRepository::class);
+        $this->app->bind(StudentQuotaServiceInterface::class, StudentQuotaService::class);
+
+        // Binding Teacher Attendance
+        $this->app->bind(TeacherAttendanceRepositoryInterface::class, TeacherAttendanceRepository::class);
+        $this->app->bind(TeacherAttendanceServiceInterface::class, TeacherAttendanceService::class);
     }
 
     /**

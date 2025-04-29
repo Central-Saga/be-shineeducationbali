@@ -17,12 +17,11 @@ class TeacherAttendance extends Model
      */
     protected $fillable = [
         'teacher_id',
-        'schedule_id',
-        'date',
-        'time_in',
-        'time_out',
+        'class_rooms_id',
+        'attendance_date',
+        'check_in',
+        'check_out',
         'status',
-        'notes',
     ];
 
     /**
@@ -31,9 +30,9 @@ class TeacherAttendance extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'date' => 'date',
-        'time_in' => 'datetime',
-        'time_out' => 'datetime',
+        'attendance_date' => 'date',
+        'check_in' => 'datetime',
+        'check_out' => 'datetime',
     ];
 
     /**
@@ -41,8 +40,6 @@ class TeacherAttendance extends Model
      */
     const STATUS_PRESENT = 'present';
     const STATUS_ABSENT = 'absent';
-    const STATUS_LATE = 'late';
-    const STATUS_LEAVE = 'leave';
     
     /**
      * Get the teacher that owns the attendance record.
@@ -53,11 +50,11 @@ class TeacherAttendance extends Model
     }
 
     /**
-     * Get the schedule that the attendance is for.
+     * Get the class that the attendance is for.
      */
-    public function schedule(): BelongsTo
+    public function classRoom(): BelongsTo
     {
-        return $this->belongsTo(Schedule::class);
+        return $this->belongsTo(ClassRoom::class, 'class_rooms_id');
     }
 
     /**
@@ -65,7 +62,7 @@ class TeacherAttendance extends Model
      */
     public function scopeForDate($query, $date)
     {
-        return $query->whereDate('date', $date);
+        return $query->whereDate('attendance_date', $date);
     }
 
     /**
@@ -93,14 +90,6 @@ class TeacherAttendance extends Model
     }
 
     /**
-     * Scope a query to only include late attendances.
-     */
-    public function scopeLate($query)
-    {
-        return $query->where('status', self::STATUS_LATE);
-    }
-
-    /**
      * Check if the teacher was present.
      */
     public function isPresent(): bool
@@ -117,28 +106,26 @@ class TeacherAttendance extends Model
     }
 
     /**
-     * Check if the teacher was late.
-     */
-    public function isLate(): bool
-    {
-        return $this->status === self::STATUS_LATE;
-    }
-
-    /**
-     * Check if the teacher was on leave.
-     */
-    public function isOnLeave(): bool
-    {
-        return $this->status === self::STATUS_LEAVE;
-    }
-
-    /**
      * Calculate duration of attendance in minutes.
      */
     public function getDurationInMinutes()
     {
-        if ($this->time_in && $this->time_out) {
-            return $this->time_in->diffInMinutes($this->time_out);
+        // Pastikan check_in dan check_out ada sebelum menghitung durasi
+        if ($this->check_in && $this->check_out) {
+            // Jika masih string, konversi ke Carbon
+            $checkIn = $this->check_in;
+            $checkOut = $this->check_out;
+            
+            // Pastikan keduanya adalah objek Carbon
+            if (!($checkIn instanceof \Carbon\Carbon)) {
+                $checkIn = \Carbon\Carbon::parse($checkIn);
+            }
+            
+            if (!($checkOut instanceof \Carbon\Carbon)) {
+                $checkOut = \Carbon\Carbon::parse($checkOut);
+            }
+            
+            return $checkIn->diffInMinutes($checkOut);
         }
         
         return 0;
