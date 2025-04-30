@@ -1,57 +1,104 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
 
 use App\Models\TransactionDetail;
+use App\Repositories\Contracts\TransactionDetailRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class TransactionDetailRepository implements TransactionDetailRepositoryInterface
 {
     protected $model;
 
+    /**
+     * TransactionDetailRepository constructor.
+     *
+     * @param TransactionDetail $model
+     */
     public function __construct(TransactionDetail $model)
     {
         $this->model = $model;
     }
 
-    public function getAll()
+    /**
+     * Get all transaction details
+     *
+     * @return Collection
+     */
+    public function getAll(): Collection
     {
-        return $this->model->with(['transaction', 'program', 'leave'])->latest()->get();
+        return $this->model->all();
     }
 
-    public function getById($id)
+    /**
+     * Get transaction detail by id
+     *
+     * @param int $id
+     * @return TransactionDetail|null
+     */
+    public function getById($id): ?TransactionDetail
     {
-        return $this->model->with(['transaction', 'program', 'leave'])->findOrFail($id);
+        return $this->model->find($id) instanceof TransactionDetail 
+            ? $this->model->find($id) 
+            : null;
     }
 
-    public function getByName($name)
+    /**
+     * Get transaction detail by name
+     *
+     * @param string $name
+     * @return Collection
+     */
+    public function getByName($name): Collection
     {
-        return $this->model->with(['transaction', 'program', 'leave'])
-            ->where('desc', 'like', "%{$name}%")
-            ->orWhereHas('program', function ($query) use ($name) {
-                $query->where('name', 'like', "%{$name}%");
-            })
-            ->orWhereHas('leave', function ($query) use ($name) {
-                $query->where('reason', 'like', "%{$name}%");
-            })
-            ->latest()
-            ->get();
+        return $this->model->where('name', 'like', "%{$name}%")->get();
     }
 
-    public function create(array $data)
+    /**
+     * Create transaction detail
+     *
+     * @param array $data
+     * @return TransactionDetail
+     */
+    public function create(array $data): TransactionDetail
     {
         return $this->model->create($data);
     }
 
-    public function update($id, array $data)
+    /**
+     * Update transaction detail
+     *
+     * @param int $id
+     * @param array $data
+     * @return TransactionDetail|null
+     */
+    public function update($id, array $data): ?TransactionDetail
     {
-        $transactionDetail = $this->model->findOrFail($id);
+        $transactionDetail = $this->getById($id);
+        
+        if (!$transactionDetail) {
+            return null;
+        }
+        
         $transactionDetail->update($data);
+        
         return $transactionDetail;
     }
 
-    public function delete($id)
+    /**
+     * Delete transaction detail
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function delete($id): bool
     {
-        $transactionDetail = $this->model->findOrFail($id);
+        $transactionDetail = $this->getById($id);
+        
+        if (!$transactionDetail) {
+            return false;
+        }
+        
         return $transactionDetail->delete();
     }
 }

@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
 
 use App\Models\JobVacancy;
 use App\Models\JobVacancyStatus;
+use App\Repositories\Contracts\JobVacancyRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class JobVacancyRepository implements JobVacancyRepositoryInterface
 {
@@ -17,9 +19,9 @@ class JobVacancyRepository implements JobVacancyRepositoryInterface
     /**
      * Get all job vacancies.
      *
-     * @return mixed
+     * @return Collection
      */
-    public function getAll()
+    public function getAll(): Collection
     {
         return $this->model->with('subject')->get();
     }
@@ -28,20 +30,20 @@ class JobVacancyRepository implements JobVacancyRepositoryInterface
      * Get a job vacancy by ID.
      *
      * @param int $id
-     * @return mixed
+     * @return JobVacancy|null
      */
-    public function getById($id)
+    public function getById($id): ?JobVacancy
     {
-        return $this->model->with('subject')->findOrFail($id);
+        return $this->model->find($id)?->load('subject');
     }
 
     /**
      * Get job vacancies by name (title).
      *
      * @param string $name
-     * @return mixed
+     * @return Collection
      */
-    public function getByName($name)
+    public function getByName($name): Collection
     {
         return $this->model->with('subject')
             ->where('title', 'like', '%' . $name . '%')
@@ -52,9 +54,9 @@ class JobVacancyRepository implements JobVacancyRepositoryInterface
      * Get job vacancies by status.
      *
      * @param string $status
-     * @return mixed
+     * @return Collection
      */
-    public function getByStatus($status)
+    public function getByStatus($status): Collection
     {
         return $this->model->with('subject')
             ->where('status', $status)
@@ -65,9 +67,9 @@ class JobVacancyRepository implements JobVacancyRepositoryInterface
      * Create a new job vacancy.
      *
      * @param array $data
-     * @return mixed
+     * @return JobVacancy
      */
-    public function create(array $data)
+    public function create(array $data): JobVacancy
     {
         return $this->model->create($data);
     }
@@ -77,11 +79,15 @@ class JobVacancyRepository implements JobVacancyRepositoryInterface
      *
      * @param int $id
      * @param array $data
-     * @return mixed
+     * @return JobVacancy|null
      */
-    public function update($id, array $data)
+    public function update($id, array $data): ?JobVacancy
     {
-        $jobVacancy = $this->model->findOrFail($id);
+        $jobVacancy = $this->getById($id);
+        if (!$jobVacancy) {
+            return null;
+        }
+        
         $jobVacancy->update($data);
         return $jobVacancy;
     }
@@ -90,11 +96,15 @@ class JobVacancyRepository implements JobVacancyRepositoryInterface
      * Delete a job vacancy.
      *
      * @param int $id
-     * @return mixed
+     * @return bool
      */
-    public function delete($id)
+    public function delete($id): bool
     {
-        $jobVacancy = $this->model->findOrFail($id);
+        $jobVacancy = $this->getById($id);
+        if (!$jobVacancy) {
+            return false;
+        }
+        
         return $jobVacancy->delete();
     }
 }

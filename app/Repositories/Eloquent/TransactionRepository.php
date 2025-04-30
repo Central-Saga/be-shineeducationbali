@@ -1,29 +1,54 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
 
 use App\Models\Transaction;
+use App\Repositories\Contracts\TransactionRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class TransactionRepository implements TransactionRepositoryInterface
 {
     protected $model;
 
+    /**
+     * TransactionRepository constructor.
+     *
+     * @param Transaction $model
+     */
     public function __construct(Transaction $model)
     {
         $this->model = $model;
     }
 
-    public function getAll()
+    /**
+     * Get all transactions
+     *
+     * @return Collection
+     */
+    public function getAll(): Collection
     {
         return $this->model->with(['student', 'teacher', 'bankAccount'])->latest()->get();
     }
 
-    public function getById($id)
+    /**
+     * Get transaction by id
+     *
+     * @param int $id
+     * @return Transaction|null
+     */
+    public function getById($id): ?Transaction
     {
-        return $this->model->with(['student', 'teacher', 'bankAccount'])->findOrFail($id);
+        $transaction = $this->model->find($id);
+        return $transaction ? $transaction->load(['student', 'teacher', 'bankAccount']) : null;
     }
 
-    public function getByName($name)
+    /**
+     * Get transaction by name
+     *
+     * @param string $name
+     * @return Collection
+     */
+    public function getByName($name): Collection
     {
         return $this->model->with(['student', 'teacher', 'bankAccount'])
             ->whereHas('student', function ($query) use ($name) {
@@ -36,7 +61,13 @@ class TransactionRepository implements TransactionRepositoryInterface
             ->get();
     }
 
-    public function getByStatus($status)
+    /**
+     * Get transaction by status
+     *
+     * @param string $status
+     * @return Collection
+     */
+    public function getByStatus($status): Collection
     {
         return $this->model->with(['student', 'teacher', 'bankAccount'])
             ->where('status', $status)
@@ -44,21 +75,46 @@ class TransactionRepository implements TransactionRepositoryInterface
             ->get();
     }
 
-    public function create(array $data)
+    /**
+     * Create transaction
+     *
+     * @param array $data
+     * @return Transaction
+     */
+    public function create(array $data): Transaction
     {
         return $this->model->create($data);
     }
 
-    public function update($id, array $data)
+    /**
+     * Update transaction
+     *
+     * @param int $id
+     * @param array $data
+     * @return Transaction|null
+     */
+    public function update($id, array $data): ?Transaction
     {
-        $transaction = $this->model->findOrFail($id);
+        $transaction = $this->getById($id);
+        if (!$transaction) {
+            return null;
+        }
         $transaction->update($data);
         return $transaction;
     }
 
-    public function delete($id)
+    /**
+     * Delete transaction
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function delete($id): bool
     {
-        $transaction = $this->model->findOrFail($id);
+        $transaction = $this->getById($id);
+        if (!$transaction) {
+            return false;
+        }
         return $transaction->delete();
     }
 }

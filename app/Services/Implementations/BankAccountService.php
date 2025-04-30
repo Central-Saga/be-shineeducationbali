@@ -1,63 +1,99 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Implementations;
 
-use App\Repositories\BankAccountRepositoryInterface;
+use App\Models\BankAccount;
+use App\Repositories\Contracts\BankAccountRepositoryInterface;
+use App\Services\Contracts\BankAccountServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class BankAccountService implements BankAccountServiceInterface
 {
     protected $repository;
 
+    /**
+     * BankAccountService constructor.
+     *
+     * @param BankAccountRepositoryInterface $repository
+     */
     public function __construct(BankAccountRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
 
-    public function getAll()
+    /**
+     * Get all bank accounts
+     *
+     * @return Collection
+     */
+    public function getAllBankAccounts(): Collection
     {
         return $this->repository->getAll();
     }
 
-    public function getById($id)
+    /**
+     * Get bank account by ID
+     *
+     * @param int $id
+     * @return BankAccount|null
+     */
+    public function getBankAccountById($id): ?BankAccount
     {
         return $this->repository->getById($id);
     }
 
-    public function getByName($name)
+    /**
+     * Get bank account by name
+     *
+     * @param string $name
+     * @return Collection
+     */
+    public function getBankAccountByName($name): Collection
     {
         return $this->repository->getByName($name);
     }
 
-    public function getByStatus($status)
+    /**
+     * Get bank accounts by status
+     *
+     * @param string $status
+     * @return Collection
+     */
+    public function getBankAccountsByStatus($status): Collection
     {
-        if (!in_array($status, ['Aktif', 'Non Aktif'])) {
-            throw new \InvalidArgumentException("Invalid status value: $status");
-        }
-
         return $this->repository->getByStatus($status);
     }
 
-    public function getBankAccountsByStatusAktif()
-    {
-        return $this->repository->getByStatus('Aktif');
-    }
-
-    public function getBankAccountsByStatusNonAktif()
-    {
-        return $this->repository->getByStatus('Non Aktif');
-    }
-
-    public function create(array $data)
+    /**
+     * Create new bank account
+     *
+     * @param array $data
+     * @return BankAccount
+     */
+    public function createBankAccount(array $data): BankAccount
     {
         return $this->repository->create($data);
     }
 
-    public function update($id, array $data)
+    /**
+     * Update bank account
+     *
+     * @param int $id
+     * @param array $data
+     * @return BankAccount|null
+     */
+    public function updateBankAccount($id, array $data): ?BankAccount
     {
         return $this->repository->update($id, $data);
     }
 
-    public function delete($id)
+    /**
+     * Delete bank account
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function deleteBankAccount($id): bool
     {
         return $this->repository->delete($id);
     }

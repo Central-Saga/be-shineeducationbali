@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
 
 use App\Models\JobApplication;
 use App\Models\JobApplicationStatus;
+use App\Repositories\Contracts\JobApplicationRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class JobApplicationRepository implements JobApplicationRepositoryInterface
 {
@@ -17,9 +19,9 @@ class JobApplicationRepository implements JobApplicationRepositoryInterface
     /**
      * Get all job applications.
      *
-     * @return mixed
+     * @return Collection
      */
-    public function getAll()
+    public function getAll(): Collection
     {
         return $this->model->with(['jobVacancy', 'user'])->get();
     }
@@ -28,20 +30,20 @@ class JobApplicationRepository implements JobApplicationRepositoryInterface
      * Get a job application by ID.
      *
      * @param int $id
-     * @return mixed
+     * @return JobApplication|null
      */
-    public function getById($id)
+    public function getById($id): ?JobApplication
     {
-        return $this->model->with(['jobVacancy', 'user'])->findOrFail($id);
+        return $this->model->find($id)?->load(['jobVacancy', 'user']);
     }
 
     /**
      * Get job applications by name (user's name).
      *
      * @param string $name
-     * @return mixed
+     * @return Collection
      */
-    public function getByName($name)
+    public function getByName($name): Collection
     {
         return $this->model->with(['jobVacancy', 'user'])
             ->whereHas('user', function ($query) use ($name) {
@@ -54,9 +56,9 @@ class JobApplicationRepository implements JobApplicationRepositoryInterface
      * Get job applications by status.
      *
      * @param string $status
-     * @return mixed
+     * @return Collection
      */
-    public function getByStatus($status)
+    public function getByStatus($status): Collection
     {
         return $this->model->with(['jobVacancy', 'user'])
             ->where('status', $status)
@@ -67,9 +69,9 @@ class JobApplicationRepository implements JobApplicationRepositoryInterface
      * Create a new job application.
      *
      * @param array $data
-     * @return mixed
+     * @return JobApplication
      */
-    public function create(array $data)
+    public function create(array $data): JobApplication
     {
         return $this->model->create($data);
     }
@@ -79,11 +81,15 @@ class JobApplicationRepository implements JobApplicationRepositoryInterface
      *
      * @param int $id
      * @param array $data
-     * @return mixed
+     * @return JobApplication|null
      */
-    public function update($id, array $data)
+    public function update($id, array $data): ?JobApplication
     {
-        $jobApplication = $this->model->findOrFail($id);
+        $jobApplication = $this->getById($id);
+        if (!$jobApplication) {
+            return null;
+        }
+        
         $jobApplication->update($data);
         return $jobApplication;
     }
@@ -92,11 +98,15 @@ class JobApplicationRepository implements JobApplicationRepositoryInterface
      * Delete a job application.
      *
      * @param int $id
-     * @return mixed
+     * @return bool
      */
-    public function delete($id)
+    public function delete($id): bool
     {
-        $jobApplication = $this->model->findOrFail($id);
+        $jobApplication = $this->getById($id);
+        if (!$jobApplication) {
+            return false;
+        }
+        
         return $jobApplication->delete();
     }
 }

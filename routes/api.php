@@ -229,3 +229,4 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+    });

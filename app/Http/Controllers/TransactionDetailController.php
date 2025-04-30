@@ -5,45 +5,45 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransactionDetailStoreRequest;
 use App\Http\Requests\TransactionDetailUpdateRequest;
 use App\Http\Resources\TransactionDetailResource;
-use App\Services\TransactionDetailService;
+use App\Services\Contracts\TransactionDetailServiceInterface;
 use Illuminate\Http\Request;
 
 class TransactionDetailController extends Controller
 {
     protected $transactionDetailService;
 
-    public function __construct(TransactionDetailService $transactionDetailService)
+    public function __construct(TransactionDetailServiceInterface $transactionDetailService)
     {
         $this->transactionDetailService = $transactionDetailService;
     }
 
     public function index(Request $request)
     {
-        $transactionDetails = $this->transactionDetailService->getAll();
+        $transactionDetails = $this->transactionDetailService->getAllTransactionDetails();
         return TransactionDetailResource::collection($transactionDetails);
     }
 
     public function store(TransactionDetailStoreRequest $request)
     {
-        $transactionDetail = $this->transactionDetailService->create($request->validated());
+        $transactionDetail = $this->transactionDetailService->createTransactionDetail($request->validated());
         return new TransactionDetailResource($transactionDetail);
     }
 
     public function show($id)
     {
-        $transactionDetail = $this->transactionDetailService->getById($id);
+        $transactionDetail = $this->transactionDetailService->getTransactionDetailById($id);
         return new TransactionDetailResource($transactionDetail);
     }
 
     public function update(TransactionDetailUpdateRequest $request, $id)
     {
-        $transactionDetail = $this->transactionDetailService->update($id, $request->validated());
+        $transactionDetail = $this->transactionDetailService->updateTransactionDetail($id, $request->validated());
         return new TransactionDetailResource($transactionDetail);
     }
 
     public function destroy($id)
     {
-        $this->transactionDetailService->delete($id);
+        $this->transactionDetailService->deleteTransactionDetail($id);
         return response()->json(['message' => 'Transaction detail deleted successfully']);
     }
 
@@ -53,7 +53,7 @@ class TransactionDetailController extends Controller
             'type' => 'required|in:Salary,Program_Payment,Deduction,Expenditure',
         ]);
 
-        $transactionDetail = $this->transactionDetailService->update($id, ['type' => $validated['type']]);
+        $transactionDetail = $this->transactionDetailService->updateTransactionDetail($id, ['type' => $validated['type']]);
         return new TransactionDetailResource($transactionDetail);
     }
 }

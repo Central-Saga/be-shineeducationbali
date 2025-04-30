@@ -1,82 +1,118 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
 
 use App\Models\Testimonial;
 use App\Repositories\Contracts\TestimonialRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class TestimonialRepository implements TestimonialRepositoryInterface
 {
+    protected $model;
+
     /**
-     * Mengambil semua data testimonial beserta relasi student.
+     * TestimonialRepository constructor.
      *
-     * @return mixed
+     * @param Testimonial $model
      */
-    public function getAllTestimonials()
+    public function __construct(Testimonial $model)
     {
-        return Testimonial::with('student')->latest()->get();
+        $this->model = $model;
     }
 
     /**
-     * Mengambil data testimonial berdasarkan ID beserta relasi student.
+     * Get all testimonials
+     *
+     * @return Collection
+     */
+    public function getAllTestimonials(): Collection
+    {
+        return $this->model->latest()->get();
+    }
+
+    /**
+     * Get testimonial by id
      *
      * @param int $id
-     * @return mixed
+     * @return Testimonial|null
      */
-    public function getTestimonialById($id)
+    public function getTestimonialById($id): ?Testimonial
     {
-        return Testimonial::with('student')->findOrFail($id);
+        try {
+            return $this->model->findOrFail($id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error("Testimonial with ID {$id} not found.");
+            return null;
+        }
     }
 
     /**
-     * Mengambil data testimonial berdasarkan nama student (berdasarkan relasi dengan student).
+     * Get testimonial by name
      *
      * @param string $name
-     * @return mixed
+     * @return Collection
      */
-    public function getTestimonialByName($name)
+    public function getTestimonialByName($name): Collection
     {
-        return Testimonial::with('student')
-            ->whereHas('student.user', function ($query) use ($name) {
-                $query->where('name', 'like', '%' . $name . '%');
-            })
+        return $this->model->where('name', 'like', "%{$name}%")
+            ->orWhere('title', 'like', "%{$name}%")
+            ->latest()
             ->get();
     }
 
     /**
-     * Membuat data testimonial baru.
+     * Get testimonials by status
      *
-     * @param array $data
-     * @return mixed
+     * @param string $status
+     * @return Collection
      */
-    public function createTestimonial(array $data)
+    public function getByStatus($status): Collection
     {
-        return Testimonial::create($data);
+        return $this->model->where('status', $status)->latest()->get();
     }
 
     /**
-     * Memperbarui data testimonial berdasarkan ID.
+     * Create testimonial
+     *
+     * @param array $data
+     * @return Testimonial
+     */
+    public function createTestimonial(array $data): Testimonial
+    {
+        return $this->model->create($data);
+    }
+
+    /**
+     * Update testimonial
      *
      * @param int $id
      * @param array $data
-     * @return mixed
+     * @return Testimonial|null
      */
-    public function updateTestimonial($id, array $data)
+    public function updateTestimonial($id, array $data): ?Testimonial
     {
-        $testimonial = Testimonial::findOrFail($id);
+        $testimonial = $this->getTestimonialById($id);
+        if (!$testimonial) {
+            return null;
+        }
+        
         $testimonial->update($data);
         return $testimonial;
     }
 
     /**
-     * Menghapus data testimonial berdasarkan ID.
+     * Delete testimonial
      *
      * @param int $id
      * @return bool
      */
-    public function deleteTestimonial($id)
+    public function deleteTestimonial($id): bool
     {
-        $testimonial = Testimonial::findOrFail($id);
+        $testimonial = $this->getTestimonialById($id);
+        if (!$testimonial) {
+            return false;
+        }
+        
         return $testimonial->delete();
     }
 }
