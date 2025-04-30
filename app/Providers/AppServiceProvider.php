@@ -25,6 +25,8 @@ use App\Repositories\JobApplicationRepository;
 use App\Repositories\LeaveRepositoryInterface;
 use App\Services\NotificationServiceInterface;
 use App\Repositories\ArticleRepositoryInterface;
+use App\Repositories\BankAccountRepository;
+use App\Repositories\BankAccountRepositoryInterface;
 use App\Repositories\Eloquent\GradeRepository;
 use App\Services\Implementations\GradeService;
 use App\Repositories\Eloquent\ProgramRepository;
@@ -104,9 +106,20 @@ use App\Repositories\Contracts\GradeCategoryRepositoryInterface;
 use App\Repositories\Contracts\CertificateGradeRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
 use App\Repositories\Contracts\TestimonialRepositoryInterface;
+use App\Repositories\Contracts\TransactionDetailRepositoryInterface;
+use App\Repositories\Eloquent\TransactionDetailRepository;
 use App\Repositories\TestimonialRepository;
+use App\Repositories\TransactionRepository;
+use App\Repositories\TransactionRepositoryInterface;
+use App\Services\BankAccountService;
+use App\Services\BankAccountServiceInterface;
 use App\Services\Contracts\TestimonialServiceInterface;
+use App\Services\Contracts\TransactionDetailServiceInterface;
+use App\Services\Implementations\TransactionDetailService;
 use App\Services\TestimonialService;
+use App\Services\TransactionDetailServiceInterface as ServicesTransactionDetailServiceInterface;
+use App\Services\TransactionService;
+use App\Services\TransactionServiceInterface;
 use App\Repositories\Contracts\StudentAttendanceRepositoryInterface;
 
 class AppServiceProvider extends ServiceProvider
@@ -184,6 +197,18 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TestimonialRepositoryInterface::class, TestimonialRepository::class);
         $this->app->bind(TestimonialServiceInterface::class, TestimonialService::class);
 
+        // Binding Bank Account
+        $this->app->bind(BankAccountRepositoryInterface::class, BankAccountRepository::class);
+        $this->app->bind(BankAccountServiceInterface::class, BankAccountService::class);
+
+        // Binding Transaction
+        $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
+        $this->app->bind(TransactionServiceInterface::class, TransactionService::class);
+
+        // Binding Transaction Detail
+        $this->app->bind(TransactionDetailRepositoryInterface::class, TransactionDetailRepository::class);
+        $this->app->bind(ServicesTransactionDetailServiceInterface::class, TransactionDetailService::class);
+
         // Binding Grade Categories
         $this->app->bind(GradeCategoryRepositoryInterface::class, GradeCategoryRepository::class);
         $this->app->bind(GradeCategoryServiceInterface::class, GradeCategoryService::class);
@@ -215,7 +240,7 @@ class AppServiceProvider extends ServiceProvider
         // Binding Student Attendance
         $this->app->bind(StudentAttendanceRepositoryInterface::class, StudentAttendanceRepository::class);
         $this->app->bind(StudentAttendanceServiceInterface::class, StudentAttendanceService::class);
-      
+
     }
 
     /**

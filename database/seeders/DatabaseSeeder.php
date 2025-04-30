@@ -44,6 +44,9 @@ class DatabaseSeeder extends Seeder
             JobVacancySeeder::class,
             JobApplicationSeeder::class,
             TestimonialSeeder::class,
+            BankAccountSeeder::class,
+            TransactionSeeder::class,
+            TransactionDetailSeeder::class,
             StudentSeeder::class,
             MaterialSeeder::class,
             GradeCategorySeeder::class,
@@ -57,7 +60,6 @@ class DatabaseSeeder extends Seeder
             CertificateGradeSeeder::class,
             // 6. Data absensi
             StudentAttendanceSeeder::class,
-
         ]);
     }
 }

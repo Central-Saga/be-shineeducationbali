@@ -10,6 +10,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
@@ -24,6 +25,8 @@ use App\Http\Controllers\EducationLevelController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\MeetingFrequencyController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TransactionDetailController;
 use App\Http\Controllers\GradeCategoryController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\AssignmentController;
@@ -176,7 +179,21 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
         Route::apiResource('testimonials', TestimonialController::class);
         Route::get('testimonials/by-name', [TestimonialController::class, 'getByName']);
     });
-
+    // Bank Accounts
+    Route::middleware('permission:mengelola bankAccounts')->group(function () {
+        Route::apiResource('bank-accounts', BankAccountController::class);
+        Route::patch('bank-accounts/{id}/status', [BankAccountController::class, 'updateStatus']);
+    });
+    // Transactions
+    Route::middleware('permission:mengelola transactions')->group(function () {
+        Route::apiResource('transactions', TransactionController::class);
+        Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus']);
+    });
+    // Transaction Details
+    Route::middleware('permission:mengelola transactionDetails')->group(function () {
+        Route::apiResource('transaction-details', TransactionDetailController::class);
+        Route::patch('transaction-details/{id}/type', [TransactionDetailController::class, 'updateType']);
+    });
 });
 
 Route::get('/user', function (Request $request) {
