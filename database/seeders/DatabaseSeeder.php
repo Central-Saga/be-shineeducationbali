@@ -58,8 +58,10 @@ class DatabaseSeeder extends Seeder
             GradeSeeder::class,
             CertificateSeeder::class,
             CertificateGradeSeeder::class,
-            // 6. Data absensi
+            // 6. Data absensi dan kuota
             StudentAttendanceSeeder::class,
+            TeacherAttendanceSeeder::class,
+            StudentQuotaSeeder::class,
         ]);
     }
 }

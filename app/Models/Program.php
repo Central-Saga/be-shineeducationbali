@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\GradeCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Program extends Model
 {
@@ -66,6 +67,15 @@ class Program extends Model
     public function classRooms()
     {
         return $this->hasMany(ClassRoom::class);
-
+    }
+    
+    /**
+     * Get all assets for this program
+     * 
+     * @return MorphMany
+     */
+    public function assets(): MorphMany
+    {
+        return $this->morphMany(Asset::class, 'assetable');
     }
 }

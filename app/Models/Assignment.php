@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Assignment extends Model
 {
@@ -41,5 +42,15 @@ class Assignment extends Model
     public function material()
     {
         return $this->belongsTo(Material::class);
+    }
+    
+    /**
+     * Get all assets for this assignment
+     * 
+     * @return MorphMany
+     */
+    public function assets(): MorphMany
+    {
+        return $this->morphMany(Asset::class, 'assetable');
     }
 }
