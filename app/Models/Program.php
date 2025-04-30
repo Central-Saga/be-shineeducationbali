@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\GradeCategory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Program extends Model
 {
@@ -54,5 +55,17 @@ class Program extends Model
     public function student()
     {
         return $this->hasMany(Material::class);
+    }
+
+
+    public function gradeCategories()
+    {
+        return $this->hasMany(GradeCategory::class, 'program_id');
+    }
+
+    public function classRooms()
+    {
+        return $this->hasMany(ClassRoom::class);
+
     }
 }

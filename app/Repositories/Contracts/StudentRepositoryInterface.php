@@ -42,6 +42,14 @@ interface StudentRepositoryInterface
     public function getStudentByName($name);
 
     /**
+     * Mengambil data student berdasarkan email user (berdasarkan relasi dengan user).
+     *
+     * @param string $email
+     * @return mixed
+     */
+    public function getStudentByEmail($email);
+
+    /**
      * Membuat data student baru.
      *
      * @param array $data
@@ -57,6 +65,15 @@ interface StudentRepositoryInterface
      * @return mixed
      */
     public function updateStudent($id, array $data);
+
+    /**
+     * Memperbarui status student berdasarkan ID.
+     *
+     * @param int $id
+     * @param string $status
+     * @return mixed
+     */
+    public function updateStudentStatus($id, $status);
 
     /**
      * Menghapus data student berdasarkan ID.

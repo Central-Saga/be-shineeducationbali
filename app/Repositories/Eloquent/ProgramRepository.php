@@ -2,6 +2,9 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\Program;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repositories\Contracts\ProgramRepositoryInterface;
 
 class ProgramRepository implements ProgramRepositoryInterface
