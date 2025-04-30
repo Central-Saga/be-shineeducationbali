@@ -2,6 +2,9 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\Material;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repositories\Contracts\MaterialRepositoryInterface;
 
 class MaterialRepository implements MaterialRepositoryInterface

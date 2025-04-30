@@ -97,7 +97,7 @@ class SubjectService implements SubjectServiceInterface
      *
      * @return void
      */
-    public function clearMeetingFrequencyCaches()
+    public function clearSubjectCaches()
     {
         Cache::forget(self::SUBJECTS_ALL_CACHE_KEY);
     }

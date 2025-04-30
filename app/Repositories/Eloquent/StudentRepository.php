@@ -159,4 +159,42 @@ class StudentRepository implements StudentRepositoryInterface
             return null;
         }
     }
+
+    /**
+     * Mengambil data student berdasarkan email user.
+     *
+     * @param string $email
+     * @return mixed
+     */
+    public function getStudentByEmail($email)
+    {
+        return $this->model->with(['program', 'user'])
+                          ->whereHas('user', function ($query) use ($email) {
+                              $query->where('email', $email);
+                          })
+                          ->first();
+    }
+
+    /**
+     * Memperbarui status student berdasarkan ID.
+     *
+     * @param int $id
+     * @param string $status
+     * @return mixed
+     */
+    public function updateStudentStatus($id, $status)
+    {
+        $student = $this->findStudent($id);
+
+        if ($student) {
+            try {
+                $student->update(['status' => $status]);
+                return $this->model->with(['program', 'user'])->find($student->id);
+            } catch (\Exception $e) {
+                Log::error("Failed to update status for student with ID {$id}: {$e->getMessage()}");
+                return null;
+            }
+        }
+        return null;
+    }
 }

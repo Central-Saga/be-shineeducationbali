@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 
 class PermissionRepository implements PermissionRepositoryInterface
