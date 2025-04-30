@@ -32,7 +32,6 @@ class AssetStoreRequest extends FormRequest
         ];
     }
 
-
     /**
      * Get model table name based on model type.
      *

@@ -23,6 +23,9 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StudentAttendanceController;
+use App\Http\Controllers\TeacherAttendanceController;
+use App\Http\Controllers\StudentQuotaController;
+use App\Http\Controllers\AssetController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -140,6 +143,33 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
         Route::get('student-attendances/date-range/{startDate}/{endDate}', [StudentAttendanceController::class, 'getByDateRange']);
         Route::get('student-attendances/status/{status}', [StudentAttendanceController::class, 'getByStatus']);
         Route::get('student-attendances/summary/{studentId}', [StudentAttendanceController::class, 'getStudentAttendanceSummary']);
+    });
+    
+    // Teacher Attendances
+    Route::middleware('permission:mengelola teacher attendances')->group(function () {
+        Route::apiResource('teacher-attendances', TeacherAttendanceController::class);
+        Route::post('teacher-attendances/check-in', [TeacherAttendanceController::class, 'checkIn']);
+        Route::post('teacher-attendances/check-out', [TeacherAttendanceController::class, 'checkOut']);
+        Route::get('teacher-attendances/teacher-stats/{teacherId}', [TeacherAttendanceController::class, 'teacherStats']);
+        Route::get('teacher-attendances/class-room-stats/{classRoomId}', [TeacherAttendanceController::class, 'classRoomStats']);
+    });
+    
+    // Student Quotas
+    Route::middleware('permission:mengelola student quotas')->group(function () {
+        Route::apiResource('student-quotas', StudentQuotaController::class);
+        Route::post('student-quotas/{id}/use-session', [StudentQuotaController::class, 'useSession']);
+        Route::post('student-quotas/{id}/add-paid', [StudentQuotaController::class, 'addPaidSessions']);
+        Route::post('student-quotas/{id}/add-accumulated', [StudentQuotaController::class, 'addAccumulatedSessions']);
+        Route::get('student-quotas/student-stats/{studentId}', [StudentQuotaController::class, 'studentStats']);
+        Route::get('student-quotas/program-stats/{programId}', [StudentQuotaController::class, 'programStats']);
+    });
+    
+    // Assets
+    Route::middleware('permission:mengelola assets')->group(function () {
+        Route::apiResource('assets', AssetController::class);
+        Route::get('assets/{modelType}/{modelId}', [AssetController::class, 'getAssets']);
+        Route::post('assets/{modelType}/{modelId}', [AssetController::class, 'uploadAsset']);
+        Route::post('assets/{modelType}/{modelId}/multiple', [AssetController::class, 'uploadMultipleAssets']);
     });
 });
 

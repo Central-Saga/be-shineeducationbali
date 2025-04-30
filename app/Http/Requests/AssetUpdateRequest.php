@@ -22,7 +22,6 @@ class AssetUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'sometimes|file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,xls,xlsx,ppt,pptx|max:5120',
             'file_path' => 'sometimes|string',
             'description' => 'nullable|string',
             'storage_type' => 'sometimes|string|in:local,s3,cloud,google_drive',

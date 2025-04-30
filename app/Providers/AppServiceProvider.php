@@ -89,6 +89,10 @@ use App\Repositories\Contracts\GradeCategoryRepositoryInterface;
 use App\Repositories\Contracts\CertificateGradeRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
 use App\Repositories\Contracts\StudentAttendanceRepositoryInterface;
+use App\Repositories\Contracts\AssetRepositoryInterface;
+use App\Repositories\Eloquent\AssetRepository;
+use App\Services\Contracts\AssetServiceInterface;
+use App\Services\Implementations\AssetService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -180,6 +184,10 @@ class AppServiceProvider extends ServiceProvider
         // Binding Teacher Attendance
         $this->app->bind(TeacherAttendanceRepositoryInterface::class, TeacherAttendanceRepository::class);
         $this->app->bind(TeacherAttendanceServiceInterface::class, TeacherAttendanceService::class);
+
+        // Binding Asset
+        $this->app->bind(AssetRepositoryInterface::class, AssetRepository::class);
+        $this->app->bind(AssetServiceInterface::class, AssetService::class);
     }
 
     /**
