@@ -8,6 +8,9 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateGradeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
@@ -15,9 +18,15 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\ClassTypeController;
+use App\Http\Controllers\JobVacancyController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\EducationLevelController;
+use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\MeetingFrequencyController;
+use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TransactionDetailController;
 use App\Http\Controllers\GradeCategoryController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\AssignmentController;
@@ -34,7 +43,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
+    });
     // Permissions
     Route::middleware('permission:mengelola permissions')->group(function () {
         Route::apiResource('permissions', PermissionController::class);
@@ -144,7 +153,7 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
         Route::get('student-attendances/status/{status}', [StudentAttendanceController::class, 'getByStatus']);
         Route::get('student-attendances/summary/{studentId}', [StudentAttendanceController::class, 'getStudentAttendanceSummary']);
     });
-    
+
     // Teacher Attendances
     Route::middleware('permission:mengelola teacher attendances')->group(function () {
         Route::apiResource('teacher-attendances', TeacherAttendanceController::class);
@@ -170,6 +179,50 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
         Route::get('assets/{modelType}/{modelId}', [AssetController::class, 'getAssets']);
         Route::post('assets/{modelType}/{modelId}', [AssetController::class, 'uploadAsset']);
         Route::post('assets/{modelType}/{modelId}/multiple', [AssetController::class, 'uploadMultipleAssets']);
+
+    // Leaves
+    Route::middleware('permission:mengelola leaves')->group(function () {
+        Route::apiResource('leaves', LeaveController::class);
+        Route::patch('leaves/{id}/status', [LeaveController::class, 'updateStatus']);
+    });
+    // Notifications
+    Route::middleware('permission:mengelola notifications')->group(function () {
+        Route::apiResource('notifications', NotificationController::class);
+        Route::patch('notifications/{id}/status', [NotificationController::class, 'updateStatus']);
+    });
+    // Article
+    Route::middleware('permission:mengelola articles')->group(function () {
+        Route::apiResource('articles', ArticleController::class);
+        Route::patch('articles/{id}/status', [ArticleController::class, 'updateStatus']);
+    });
+    // Job Vacancies
+    Route::middleware('permission:mengelola job vacancies')->group(function () {
+        Route::apiResource('job-vacancies', JobVacancyController::class);
+        Route::patch('job-vacancies/{id}/status', [JobVacancyController::class, 'updateStatus']);
+    });
+    // Job Applications
+    Route::middleware('permission:mengelola jobApplications')->group(function () {
+        Route::apiResource('job-applications', JobApplicationController::class);
+        Route::patch('job-applications/{id}/status', [JobApplicationController::class, 'updateStatus']);
+    // Testimonials
+    Route::middleware('permission:mengelola testimonials')->group(function () {
+        Route::apiResource('testimonials', TestimonialController::class);
+        Route::get('testimonials/by-name', [TestimonialController::class, 'getByName']);
+    });
+    // Bank Accounts
+    Route::middleware('permission:mengelola bankAccounts')->group(function () {
+        Route::apiResource('bank-accounts', BankAccountController::class);
+        Route::patch('bank-accounts/{id}/status', [BankAccountController::class, 'updateStatus']);
+    });
+    // Transactions
+    Route::middleware('permission:mengelola transactions')->group(function () {
+        Route::apiResource('transactions', TransactionController::class);
+        Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus']);
+    });
+    // Transaction Details
+    Route::middleware('permission:mengelola transactionDetails')->group(function () {
+        Route::apiResource('transaction-details', TransactionDetailController::class);
+        Route::patch('transaction-details/{id}/type', [TransactionDetailController::class, 'updateType']);
     });
 });
 

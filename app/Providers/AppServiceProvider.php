@@ -3,12 +3,30 @@
 namespace App\Providers;
 
 use App\Models\Student;
+use App\Services\LeaveService;
+use App\Services\ArticleService;
+use App\Services\JobVacancyService;
+use App\Repositories\LeaveRepository;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Schema;
+use App\Repositories\ArticleRepository;
+use App\Services\JobApplicationService;
+use App\Services\LeaveServiceInterface;
 use Illuminate\Support\ServiceProvider;
+use App\Services\ArticleServiceInterface;
+use App\Repositories\JobVacancyRepository;
+use App\Repositories\NotificationRepository;
+use App\Services\JobVacancyServiceInterface;
 use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\Implementations\RoleService;
 use App\Services\Implementations\UserService;
+use App\Repositories\JobApplicationRepository;
+use App\Repositories\LeaveRepositoryInterface;
+use App\Services\NotificationServiceInterface;
+use App\Repositories\ArticleRepositoryInterface;
+use App\Repositories\BankAccountRepository;
+use App\Repositories\BankAccountRepositoryInterface;
 use App\Repositories\Eloquent\GradeRepository;
 use App\Services\Implementations\GradeService;
 use App\Repositories\Eloquent\ProgramRepository;
@@ -21,6 +39,7 @@ use App\Services\Implementations\ProgramService;
 use App\Services\Implementations\StudentService;
 use App\Services\Implementations\SubjectService;
 use App\Services\Implementations\TeacherService;
+use App\Services\JobApplicationServiceInterface;
 use App\Repositories\Eloquent\MaterialRepository;
 use App\Repositories\Eloquent\ScheduleRepository;
 use App\Services\Contracts\GradeServiceInterface;
@@ -32,6 +51,7 @@ use App\Services\Implementations\ClassRoomService;
 use App\Services\Implementations\ClassTypeService;
 use App\Repositories\Eloquent\AssignmentRepository;
 use App\Repositories\Eloquent\PermissionRepository;
+use App\Repositories\JobVacancyRepositoryInterface;
 use App\Services\Contracts\ProgramServiceInterface;
 use App\Services\Contracts\StudentServiceInterface;
 use App\Services\Contracts\SubjectServiceInterface;
@@ -40,6 +60,7 @@ use App\Services\Implementations\AssignmentService;
 use App\Services\Implementations\PermissionService;
 use App\Repositories\Eloquent\CertificateRepository;
 use App\Services\Contracts\MaterialServiceInterface;
+use App\Repositories\NotificationRepositoryInterface;
 use App\Services\Contracts\ScheduleServiceInterface;
 use App\Services\Implementations\CertificateService;
 use App\Services\Contracts\ClassRoomServiceInterface;
@@ -51,6 +72,7 @@ use App\Services\Implementations\GradeCategoryService;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Eloquent\EducationLevelRepository;
+use App\Repositories\JobApplicationRepositoryInterface;
 use App\Services\Contracts\CertificateServiceInterface;
 use App\Services\Implementations\EducationLevelService;
 use App\Repositories\Contracts\GradeRepositoryInterface;
@@ -65,6 +87,7 @@ use App\Repositories\Contracts\SubjectRepositoryInterface;
 use App\Repositories\Contracts\TeacherRepositoryInterface;
 use App\Repositories\Eloquent\StudentAttendanceRepository;
 use App\Services\Contracts\EducationLevelServiceInterface;
+use App\Services\StudentService as ServicesStudentService;
 use App\Services\Implementations\StudentAttendanceService;
 use App\Repositories\Contracts\MaterialRepositoryInterface;
 use App\Repositories\Contracts\ScheduleRepositoryInterface;
@@ -88,6 +111,21 @@ use App\Repositories\Contracts\EducationLevelRepositoryInterface;
 use App\Repositories\Contracts\GradeCategoryRepositoryInterface;
 use App\Repositories\Contracts\CertificateGradeRepositoryInterface;
 use App\Repositories\Contracts\MeetingFrequencyRepositoryInterface;
+use App\Repositories\Contracts\TestimonialRepositoryInterface;
+use App\Repositories\Contracts\TransactionDetailRepositoryInterface;
+use App\Repositories\Eloquent\TransactionDetailRepository;
+use App\Repositories\TestimonialRepository;
+use App\Repositories\TransactionRepository;
+use App\Repositories\TransactionRepositoryInterface;
+use App\Services\BankAccountService;
+use App\Services\BankAccountServiceInterface;
+use App\Services\Contracts\TestimonialServiceInterface;
+use App\Services\Contracts\TransactionDetailServiceInterface;
+use App\Services\Implementations\TransactionDetailService;
+use App\Services\TestimonialService;
+use App\Services\TransactionDetailServiceInterface as ServicesTransactionDetailServiceInterface;
+use App\Services\TransactionService;
+use App\Services\TransactionServiceInterface;
 use App\Repositories\Contracts\StudentAttendanceRepositoryInterface;
 use App\Repositories\Contracts\AssetRepositoryInterface;
 use App\Repositories\Eloquent\AssetRepository;
@@ -145,6 +183,42 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(StudentRepositoryInterface::class, StudentRepository::class);
         $this->app->bind(StudentServiceInterface::class, StudentService::class);
 
+        // Binding Leave
+        $this->app->bind(LeaveRepositoryInterface::class, LeaveRepository::class);
+        $this->app->bind(LeaveServiceInterface::class, LeaveService::class);
+
+        // Binding Notification
+        $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
+        $this->app->bind(NotificationServiceInterface::class, NotificationService::class);
+
+        // Binding Article
+        $this->app->bind(ArticleRepositoryInterface::class, ArticleRepository::class);
+        $this->app->bind(ArticleServiceInterface::class, ArticleService::class);
+
+        // Binding Job Vacancy
+        $this->app->bind(JobVacancyRepositoryInterface::class, JobVacancyRepository::class);
+        $this->app->bind(JobVacancyServiceInterface::class, JobVacancyService::class);
+
+        // Binding JobApplication
+        $this->app->bind(JobApplicationRepositoryInterface::class, JobApplicationRepository::class);
+        $this->app->bind(JobApplicationServiceInterface::class, JobApplicationService::class);
+
+        // Binding Testimonial
+        $this->app->bind(TestimonialRepositoryInterface::class, TestimonialRepository::class);
+        $this->app->bind(TestimonialServiceInterface::class, TestimonialService::class);
+
+        // Binding Bank Account
+        $this->app->bind(BankAccountRepositoryInterface::class, BankAccountRepository::class);
+        $this->app->bind(BankAccountServiceInterface::class, BankAccountService::class);
+
+        // Binding Transaction
+        $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
+        $this->app->bind(TransactionServiceInterface::class, TransactionService::class);
+
+        // Binding Transaction Detail
+        $this->app->bind(TransactionDetailRepositoryInterface::class, TransactionDetailRepository::class);
+        $this->app->bind(ServicesTransactionDetailServiceInterface::class, TransactionDetailService::class);
+
         // Binding Grade Categories
         $this->app->bind(GradeCategoryRepositoryInterface::class, GradeCategoryRepository::class);
         $this->app->bind(GradeCategoryServiceInterface::class, GradeCategoryService::class);
@@ -176,7 +250,7 @@ class AppServiceProvider extends ServiceProvider
         // Binding Student Attendance
         $this->app->bind(StudentAttendanceRepositoryInterface::class, StudentAttendanceRepository::class);
         $this->app->bind(StudentAttendanceServiceInterface::class, StudentAttendanceService::class);
-
+      
         // Binding Student Quota
         $this->app->bind(StudentQuotaRepositoryInterface::class, StudentQuotaRepository::class);
         $this->app->bind(StudentQuotaServiceInterface::class, StudentQuotaService::class);
@@ -188,6 +262,7 @@ class AppServiceProvider extends ServiceProvider
         // Binding Asset
         $this->app->bind(AssetRepositoryInterface::class, AssetRepository::class);
         $this->app->bind(AssetServiceInterface::class, AssetService::class);
+
     }
 
     /**
