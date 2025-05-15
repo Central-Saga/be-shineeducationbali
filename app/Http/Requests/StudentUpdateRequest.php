@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateStudentRequest extends FormRequest
+class StudentUpdateRequest extends FormRequest
 {
     /**
      * Menentukan apakah pengguna diizinkan untuk membuat permintaan ini.

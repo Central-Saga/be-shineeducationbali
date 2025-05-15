@@ -4,6 +4,7 @@ namespace App\Services\Implementations;
 
 use App\Models\Student;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use App\Services\Contracts\StudentServiceInterface;
 use App\Repositories\Contracts\StudentRepositoryInterface;
 
@@ -130,13 +131,24 @@ class StudentService implements StudentServiceInterface
      * Menghapus data student berdasarkan ID.
      *
      * @param int $id
-     * @return mixed
+     * @return bool
      */
     public function deleteStudent($id)
     {
-        $result = $this->repository->deleteStudent($id);
-        $this->clearCache();
-        return $result;
+        try {
+            $student = $this->repository->getStudentById($id);
+            if (!$student) {
+                Log::error("Service layer - Student with ID {$id} not found");
+                return false;
+            }
+
+            $result = $this->repository->deleteStudent($id);
+            $this->clearCache();
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Service layer - Failed to delete student with ID {$id}. Error: {$e->getMessage()}");
+            return false;
+        }
     }
 
     /**

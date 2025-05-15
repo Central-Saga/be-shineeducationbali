@@ -130,18 +130,101 @@ class StudentRepository implements StudentRepositoryInterface
      */
     public function deleteStudent($id)
     {
+        Log::info("Attempting to delete student with ID: {$id}");
+        
         $student = $this->findStudent($id);
-
-        if ($student) {
-            try {
-                $student->delete();
-                return true;
-            } catch (\Exception $e) {
-                Log::error("Failed to delete student with ID {$id}: {$e->getMessage()}");
-                return false;
-            }
+        if (!$student) {
+            Log::error("Cannot delete student: Student with ID {$id} not found");
+            return false;
         }
-        return false;
+
+        $studentName = $student->user ? $student->user->name : 'N/A';
+        Log::info("Found student to delete:", [
+            'student_id' => $student->id,
+            'name' => $studentName,
+            'related_data' => [
+                'quotas' => $student->studentQuotas()->count(),
+                'attendances' => $student->studentAttendances()->count(),
+                'assignments' => $student->assignments()->count(),
+                'grades' => $student->grades()->count(),
+                'classrooms' => $student->classRooms()->count(),
+                'assets' => $student->assets()->count()
+            ]
+        ]);
+
+        \DB::beginTransaction();
+        try {
+            // Delete related data in a specific order to avoid foreign key constraints
+            
+            // 1. First delete all assets (morphMany relationship)
+            try {
+                $student->assets()->delete();
+                Log::info("Deleted assets for student {$studentName}");
+            } catch (\Exception $e) {
+                Log::warning("Error deleting student assets: " . $e->getMessage());
+            }
+
+            // 2. Delete all student quotas
+            try {
+                $student->studentQuotas()->delete();
+                Log::info("Deleted quotas for student {$studentName}");
+            } catch (\Exception $e) {
+                Log::warning("Error deleting student quotas: " . $e->getMessage());
+            }
+
+            // 3. Delete student attendances
+            try {
+                $student->studentAttendances()->delete();
+                Log::info("Deleted attendances for student {$studentName}");
+            } catch (\Exception $e) {
+                Log::warning("Error deleting student attendances: " . $e->getMessage());
+            }
+
+            // 4. Delete assignments and related data
+            try {
+                // Delete grades first
+                $student->grades()->delete();
+                Log::info("Deleted grades for student {$studentName}");
+                
+                // Then delete assignments
+                $student->assignments()->delete();
+                Log::info("Deleted assignments for student {$studentName}");
+            } catch (\Exception $e) {
+                Log::warning("Error deleting student assignments/grades: " . $e->getMessage());
+                // Continue with deletion process even if this fails
+            }
+
+            // 5. Detach from classrooms (handles pivot table)
+            try {
+                $student->classRooms()->detach();
+                Log::info("Detached student {$studentName} from all classrooms");
+            } catch (\Exception $e) {
+                Log::warning("Error detaching student from classrooms: " . $e->getMessage());
+            }
+            
+            // 6. Finally, delete the student record
+            if ($student->delete()) {
+                // 7. If deletion is successful, commit transaction
+                \DB::commit();
+                Log::info("Successfully deleted student {$studentName} with ID: {$id}");
+                return true;
+            } 
+
+            // If we get here, deletion failed
+            \DB::rollBack();
+            Log::error("Failed to delete student {$studentName} with ID {$id}: Delete operation returned false");
+            return false;
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            Log::error("Failed to delete student {$studentName} with ID {$id}. Error: " . $e->getMessage(), [
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 
     /**

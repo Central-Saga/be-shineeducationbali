@@ -32,6 +32,7 @@ class Student extends Model
         'registration_date',
         'status',
     ];
+
     /**
      * Definisikan hubungan dengan model Program.
      *
@@ -52,11 +53,21 @@ class Student extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
   
+    /**
+     * Definisikan hubungan dengan model ClassRoom.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function classRooms()
     {
         return $this->belongsToMany(ClassRoom::class, 'student_classrooms');
     }
 
+    /**
+     * Definisikan hubungan dengan model Assignment.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function assignments()
     {
         return $this->hasMany(Assignment::class);
@@ -70,5 +81,35 @@ class Student extends Model
     public function assets(): MorphMany
     {
         return $this->morphMany(Asset::class, 'assetable');
+    }
+
+    /**
+     * Definisikan hubungan dengan model StudentQuota.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function studentQuotas()
+    {
+        return $this->hasMany(StudentQuota::class);
+    }
+
+    /**
+     * Definisikan hubungan dengan model StudentAttendance.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function studentAttendances()
+    {
+        return $this->hasMany(StudentAttendance::class);
+    }
+
+    /**
+     * Definisikan hubungan dengan model Grade.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function grades()
+    {
+        return $this->hasMany(Grade::class);
     }
 }
