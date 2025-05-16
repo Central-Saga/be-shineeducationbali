@@ -26,10 +26,10 @@ class AssignmentStoreRequest extends FormRequest
             'class_room_id' => ['required', 'exists:class_rooms,id'],
             'teacher_id' => ['required', 'exists:teachers,id'],
             'material_id' => ['required', 'exists:materials,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'due_date' => ['required', 'date'],
-            'status' => ['required', 'string', 'in:pending,submitted,graded'],
+            'title' => ['required', 'string', 'max:150'],
+            'description' => ['required', 'string'],
+            'due_date' => ['required', 'date_format:Y-m-d H:i:s'],
+            'status' => ['required', 'string', 'in:Dalam Pengajuan,Terselesaikan,Ditolak,Belum Terselesaikan'],
         ];
     }
 }

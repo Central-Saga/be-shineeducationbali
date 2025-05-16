@@ -26,10 +26,10 @@ class AssignmentUpdateRequest extends FormRequest
             'class_room_id' => ['sometimes', 'exists:class_rooms,id'],
             'teacher_id' => ['sometimes', 'exists:teachers,id'],
             'material_id' => ['sometimes', 'exists:materials,id'],
-            'title' => ['sometimes', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'due_date' => ['sometimes', 'date'],
-            'status' => ['sometimes', 'string', 'in:pending,submitted,graded'],
+            'title' => ['sometimes', 'string', 'max:150'],
+            'description' => ['sometimes', 'string'],
+            'due_date' => ['sometimes', 'date_format:Y-m-d H:i:s'],
+            'status' => ['sometimes', 'string', 'in:Dalam Pengajuan,Terselesaikan,Ditolak,Belum Terselesaikan'],
         ];
     }
 }

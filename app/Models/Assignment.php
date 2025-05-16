@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Assignment extends Model
 {
     /** @use HasFactory<\Database\Factories\AssignmentFactory> */
     use HasFactory;
-
+    
     // Definisi status yang valid sesuai dengan database
     const STATUS_PENDING = 'Dalam Pengajuan';
     const STATUS_COMPLETED = 'Terselesaikan';
@@ -31,10 +32,14 @@ class Assignment extends Model
         'status',
     ];
 
+    /**
+     * Handle model events 
+     */
     protected static function boot()
     {
         parent::boot();
-        
+
+        // Handle validation when saving
         static::saving(function ($assignment) {
             $validStatuses = [
                 self::STATUS_PENDING,
@@ -52,6 +57,46 @@ class Assignment extends Model
                     'Status tidak valid. Status yang tersedia: %s',
                     implode(', ', $validStatuses)
                 ));
+            }
+        });
+
+        // Handle cleanup when deleting
+        static::deleting(function ($assignment) {
+            Log::info('Model: Preparing to delete Assignment and related data', ['id' => $assignment->id]);
+
+            try {
+                DB::beginTransaction();
+                
+                // Delete associated assets
+                $assetCount = $assignment->assets()->count();
+                if ($assetCount > 0) {
+                    $assignment->assets()->delete();
+                    Log::info('Model: Deleted Assignment assets', [
+                        'assignment_id' => $assignment->id,
+                        'assets_count' => $assetCount
+                    ]);
+                }
+
+                // Delete associated grades
+                $gradeCount = $assignment->grades()->count();
+                if ($gradeCount > 0) {
+                    $assignment->grades()->delete();
+                    Log::info('Model: Deleted Assignment grades', [
+                        'assignment_id' => $assignment->id,
+                        'grades_count' => $gradeCount
+                    ]);
+                }
+
+                DB::commit();
+                return true;
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Model: Failed to delete Assignment related data', [
+                    'id' => $assignment->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw $e; // Re-throw to be handled by the controller
             }
         });
     }
@@ -105,5 +150,13 @@ class Assignment extends Model
     public function assets(): MorphMany
     {
         return $this->morphMany(Asset::class, 'assetable');
+    }
+
+    /**
+     * Get all grades for this assignment
+     */
+    public function grades()
+    {
+        return $this->hasMany(Grade::class);
     }
 }

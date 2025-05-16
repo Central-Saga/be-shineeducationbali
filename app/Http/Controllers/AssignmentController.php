@@ -133,19 +133,46 @@ class AssignmentController extends Controller
     public function destroy(string $id)
     {
         try {
-            $result = $this->assignmentService->deleteAssignment($id);
-            if (!$result) {
+            // First check if assignment exists
+            $assignment = $this->assignmentService->getAssignmentById($id);
+            if (!$assignment) {
+                Log::warning('Controller: Assignment not found for deletion', ['id' => $id]);
                 return response()->json([
-                    'message' => 'Tugas tidak ditemukan'
+                    'message' => 'Tugas tidak ditemukan',
+                    'error_code' => 'ASSIGNMENT_NOT_FOUND'
                 ], 404);
             }
+
+            Log::info('Controller: Attempting to delete assignment', [
+                'id' => $id,
+                'status' => $assignment->status,
+                'class_room_id' => $assignment->class_room_id
+            ]);
+
+            $result = $this->assignmentService->deleteAssignment($id);
+            if (!$result) {
+                Log::error('Controller: Failed to delete assignment', ['id' => $id]);
+                return response()->json([
+                    'message' => 'Gagal menghapus tugas',
+                    'error_code' => 'DELETE_FAILED'
+                ], 500);
+            }
+
+            Log::info('Controller: Assignment deleted successfully', ['id' => $id]);
             return response()->json([
                 'message' => 'Tugas berhasil dihapus'
             ]);
         } catch (\Exception $e) {
+            Log::error('Controller: Exception while deleting assignment', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
-                'message' => $e->getMessage()
-            ], 400);
+                'message' => 'Terjadi kesalahan saat menghapus tugas',
+                'error_code' => 'INTERNAL_ERROR',
+                'error_details' => $e->getMessage()
+            ], 500);
         }
     }
 }

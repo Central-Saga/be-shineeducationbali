@@ -204,9 +204,34 @@ class AssignmentService implements AssignmentServiceInterface
      */
     public function deleteAssignment($id)
     {
-        $result = $this->repository->deleteAssignment($id);
-        $this->clearAssignmentCaches();
+        Log::info('Service: Attempting to delete assignment:', ['id' => $id]);
 
+        // First check if the assignment exists
+        $assignment = $this->repository->getAssignmentById($id);
+        if (!$assignment) {
+            Log::error('Service: Assignment not found for deletion', ['id' => $id]);
+            return false;
+        }
+
+        Log::info('Service: Found assignment for deletion', [
+            'id' => $id,
+            'status' => $assignment->status,
+            'class_room_id' => $assignment->class_room_id
+        ]);
+        
+        $result = $this->repository->deleteAssignment($id);
+        
+        if ($result) {
+            // Clear all related caches
+            $this->clearAssignmentCache(); // Use the existing cache clearing method
+            Log::info('Service: Assignment deleted successfully, cache cleared', ['id' => $id]);
+        } else {
+            Log::error('Service: Failed to delete assignment', [
+                'id' => $id,
+                'error' => 'Unknown error occurred during deletion'
+            ]);
+        }
+        
         return $result;
     }
 

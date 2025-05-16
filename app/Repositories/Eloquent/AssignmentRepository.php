@@ -161,22 +161,84 @@ class AssignmentRepository implements AssignmentRepositoryInterface
      * Menghapus assignment berdasarkan ID.
      *
      * @param int $id
-     * @return mixed
+     * @return bool
      */
     public function deleteAssignment($id)
     {
-        $assignment = $this->findAssignment($id);
-
-        if ($assignment) {
-            try {
-                $assignment->delete();
-                return true;
-            } catch (\Exception $e) {
-                Log::error("Failed to delete assignment with ID {$id}: {$e->getMessage()}");
+        Log::info('Repository: Attempting to delete assignment:', ['id' => $id]);
+        
+        try {
+            \DB::beginTransaction();
+            
+            $assignment = $this->model->with([
+                'student',
+                'classRoom',
+                'teacher',
+                'material',
+                'assets',
+                'grades'
+            ])->find($id);
+            
+            if (!$assignment) {
+                Log::error('Repository: Assignment not found for deletion', ['id' => $id]);
                 return false;
             }
+
+            // Log assignment details and related data before deletion
+            Log::info('Repository: Found assignment for deletion', [
+                'id' => $id,
+                'status' => $assignment->status,
+                'student_id' => $assignment->student_id,
+                'class_room_id' => $assignment->class_room_id,
+                'teacher_id' => $assignment->teacher_id,
+                'material_id' => $assignment->material_id,
+                'has_assets' => $assignment->assets()->count() > 0,
+                'has_grades' => $assignment->grades()->count() > 0
+            ]);
+
+            // Delete related data first
+            try {
+                // Delete associated assets if any
+                if ($assignment->assets()->count() > 0) {
+                    $assignment->assets()->delete();
+                    Log::info('Repository: Deleted assignment assets', ['id' => $id]);
+                }
+
+                // Delete associated grades if any
+                if ($assignment->grades()->count() > 0) {
+                    $assignment->grades()->delete();
+                    Log::info('Repository: Deleted assignment grades', ['id' => $id]);
+                }
+
+                // Now delete the assignment
+                $deleted = $assignment->delete();
+                
+                if ($deleted) {
+                    \DB::commit();
+                    Log::info('Repository: Assignment and related data successfully deleted', ['id' => $id]);
+                    return true;
+                } else {
+                    \DB::rollBack();
+                    Log::error('Repository: Failed to delete assignment - delete() returned false', ['id' => $id]);
+                    return false;
+                }
+            } catch (\Exception $e) {
+                \DB::rollBack();
+                Log::error('Repository: Error deleting assignment or related data:', [
+                    'id' => $id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw $e;
+            }
+        } catch (\Exception $e) {
+            Log::error('Repository: Error in delete process:', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return false;
         }
-        return false;
     }
 
     /**
