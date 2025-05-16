@@ -9,6 +9,7 @@ use App\Http\Resources\ClassRoomResource;
 use App\Http\Requests\ClassRoomStoreRequest;
 use App\Http\Requests\ClassRoomUpdateRequest;
 use App\Services\Contracts\ClassRoomServiceInterface;
+use Illuminate\Support\Facades\Log;
 
 class ClassRoomController extends Controller
 {
@@ -26,21 +27,65 @@ class ClassRoomController extends Controller
     {
         try {
             $status = $request->query('status');
-
-            if ($status === null) {
+            Log::info('Request received with status:', ['status' => $status, 'type' => gettype($status)]);                if ($status === null) {
+                Log::channel('daily')->info('Getting all classrooms');
                 $classRooms = $this->classRoomService->getAllClassRooms();
-            } elseif ($status == 1) {
-                $classRooms = $this->classRoomService->getActiveClassRooms();
-            } elseif ($status == 0) {
-                $classRooms = $this->classRoomService->getInactiveClassRooms();
             } else {
-                return response()->json([
-                    'message' => 'Parameter status tidak valid'
-                ], 400);
+                // Status = 1 for active, 0 for inactive
+                if ($status == 1) {
+                    Log::channel('daily')->info('Getting active classrooms');
+                    $classRooms = $this->classRoomService->getActiveClassRooms();
+                } elseif ($status == 0) {
+                    Log::channel('daily')->info('Getting inactive classrooms from controller');
+                    $classRooms = $this->classRoomService->getInactiveClassRooms();
+                    
+                    // Debug the result
+                    Log::channel('daily')->info('Inactive classrooms result:', [
+                        'hasData' => isset($classRooms),
+                        'isCollection' => $classRooms instanceof \Illuminate\Database\Eloquent\Collection,
+                        'count' => $classRooms ? $classRooms->count() : 0,
+                        'raw' => $classRooms ? $classRooms->toArray() : null
+                    ]);
+                    
+                    // Debug inactive classrooms
+                    Log::info('Inactive classrooms before resource transformation:', [
+                        'count' => $classRooms->count(),
+                        'data' => $classRooms->toArray()
+                        // Removed call to undefined method getLastQuery()
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Invalid status parameter. Use 1 for active classrooms or 0 for inactive classrooms.'
+                    ], 400);
+                }
             }
 
-            return ClassRoomResource::collection($classRooms);
+            // Log the results
+            Log::info('Query results:', [
+                'count' => $classRooms->count(),
+                'status' => $status,
+                'first_item' => $classRooms->first()
+            ]);
+
+            // Log raw data before transformation
+            Log::info('Raw classroom data:', [
+                'data' => $classRooms->toArray()
+            ]);
+
+            $resource = ClassRoomResource::collection($classRooms);
+
+            // Log transformed data
+            Log::info('Transformed classroom data:', [
+                'data' => $resource->response()->getData(true)
+            ]);
+
+            return $resource;
         } catch (\Exception $e) {
+            Log::error('Error in index method:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'message' => $e->getMessage()
             ], 500);

@@ -6,11 +6,14 @@ use App\Services\Contracts\ClassRoomServiceInterface;
 use App\Repositories\Contracts\ClassRoomRepositoryInterface;
 use App\Services\Contracts\StudentServiceInterface;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ClassRoomService implements ClassRoomServiceInterface
 {
     protected $repository;
     protected $studentService;
+    protected $lastQuery;
 
     const CLASS_ROOMS_ALL_CACHE_KEY = 'class_rooms.all';
     const CLASS_ROOMS_ACTIVE_CACHE_KEY = 'class_rooms.active';
@@ -23,6 +26,7 @@ class ClassRoomService implements ClassRoomServiceInterface
         $this->repository = $repository;
         $this->studentService = $studentService;
     }
+
     /**
      * Mengambil semua class rooms.
      *
@@ -87,9 +91,27 @@ class ClassRoomService implements ClassRoomServiceInterface
      */
     public function getInactiveClassRooms()
     {
+        Log::info('ClassRoomService: Getting inactive classrooms from cache or repository');
         return Cache::remember(self::CLASS_ROOMS_INACTIVE_CACHE_KEY, 3600, function () {
-            return $this->repository->getInactiveClassRooms();
+            Log::info('ClassRoomService: Cache miss, getting from repository');
+            $result = $this->repository->getInactiveClassRooms();
+            $this->lastQuery = DB::getQueryLog()[count(DB::getQueryLog()) - 1] ?? null;
+            Log::info('ClassRoomService: Repository returned data', [
+                'count' => $result->count(),
+                'query' => $this->lastQuery ?? 'No query logged'
+            ]);
+            return $result;
         });
+    }
+
+    /**
+     * Get the last executed query
+     *
+     * @return string|null
+     */
+    public function getLastQuery()
+    {
+        return $this->lastQuery;
     }
 
     /**
@@ -142,6 +164,7 @@ class ClassRoomService implements ClassRoomServiceInterface
     {
         Cache::forget(self::CLASS_ROOMS_ALL_CACHE_KEY);
         Cache::forget(self::CLASS_ROOMS_ACTIVE_CACHE_KEY);
+        Cache::forget(self::CLASS_ROOMS_INACTIVE_CACHE_KEY);
         Cache::forget(self::CLASS_ROOMS_INACTIVE_CACHE_KEY);
     }
 

@@ -72,7 +72,7 @@ class ClassRoomRepository implements ClassRoomRepositoryInterface
      */
     public function getActiveClassRooms()
     {
-        return $this->model->with('program', 'teacher', 'schedules', 'students', 'assignments')->where('status', 'active')->get();
+        return $this->model->with('program', 'teacher', 'schedules', 'students', 'assignments')->where('status', 'Aktif')->get();
     }
 
     /**
@@ -82,7 +82,46 @@ class ClassRoomRepository implements ClassRoomRepositoryInterface
      */
     public function getInactiveClassRooms()
     {
-        return $this->model->with('program', 'teacher', 'schedules', 'students', 'assignments')->where('status', 'inactive')->get();
+        Log::channel('daily')->info('Getting inactive classrooms from repository - start');
+        try {
+            // Build query
+            $query = $this->model->query()
+                ->with(['program', 'teacher', 'schedules', 'students', 'assignments'])
+                ->where('status', '=', 'Non Aktif');
+            
+            // Debug query
+            $queryStr = $query->toSql();
+            $bindings = $query->getBindings();
+            Log::channel('daily')->info('Query debug:', [
+                'sql' => $queryStr,
+                'bindings' => $bindings,
+            ]);
+            
+            // Log the query
+            Log::info('Inactive classrooms query:', [
+                'sql' => $query->toSql(),
+                'bindings' => $query->getBindings()
+            ]);
+            
+            // Execute query
+            $results = $query->get();
+            
+            // Log results in detail
+            Log::channel('daily')->info('Inactive classrooms found:', [
+                'count' => $results->count(),
+                'statuses' => $results->pluck('status')->unique()->toArray(),
+                'ids' => $results->pluck('id')->toArray(),
+                'first_record' => $results->first() ? $results->first()->toArray() : null
+            ]);
+            
+            return $results;
+        } catch (\Exception $e) {
+            Log::error('Error getting inactive classrooms:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 
     /**

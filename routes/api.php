@@ -115,7 +115,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Class Rooms
-    Route::middleware('permission:mengelola class rooms')->group(function () {
+    Route::middleware('permission:mengelola classes')->group(function () {
         Route::apiResource('class-rooms', ClassRoomController::class);
         Route::patch('class-rooms/{id}/status', [ClassRoomController::class, 'updateStatus']);
         Route::post('class-rooms/{id}/attach-students', [ClassRoomController::class, 'attachStudent']);
