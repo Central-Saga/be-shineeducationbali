@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
 
 use App\Models\Article;
+use App\Repositories\Contracts\ArticleRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class ArticleRepository implements ArticleRepositoryInterface
@@ -42,7 +43,7 @@ class ArticleRepository implements ArticleRepositoryInterface
      */
     public function findById(int $id): ?Article
     {
-        return $this->model->with('user')->findOrFail($id);
+        return $this->model->with('user')->find($id);
     }
 
     /**
@@ -67,7 +68,8 @@ class ArticleRepository implements ArticleRepositoryInterface
      */
     public function create(array $data): Article
     {
-        return $this->model->create($data);
+        $article = $this->model->create($data);
+        return $article->load('user');
     }
 
     /**
@@ -81,7 +83,7 @@ class ArticleRepository implements ArticleRepositoryInterface
     {
         $article = $this->findById($id);
         $article->update($data);
-        return $article;
+        return $article->fresh()->load('user');
     }
 
     /**
@@ -93,6 +95,6 @@ class ArticleRepository implements ArticleRepositoryInterface
     public function delete(int $id): bool
     {
         $article = $this->findById($id);
-        return $article->delete();
+        return $article ? $article->delete() : false;
     }
 }

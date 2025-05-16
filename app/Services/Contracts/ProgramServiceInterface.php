@@ -12,6 +12,20 @@ interface ProgramServiceInterface
     public function getAllPrograms();
 
     /**
+     * Mengambil program yang aktif.
+     *
+     * @return mixed
+     */
+    public function getActivePrograms();
+
+    /**
+     * Mengambil program yang tidak aktif.
+     *
+     * @return mixed
+     */
+    public function getInactivePrograms();
+
+    /**
      * Mengambil program berdasarkan ID.
      *
      * @param int $id

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ArticleStoreRequest;
 use App\Http\Requests\ArticleUpdateRequest;
 use App\Http\Resources\ArticleResource;
-use App\Services\ArticleServiceInterface;
+use App\Services\Contracts\ArticleServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

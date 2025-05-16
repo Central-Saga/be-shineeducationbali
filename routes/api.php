@@ -209,6 +209,31 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::middleware('permission:mengelola notifications')->group(function () {
         Route::apiResource('notifications', NotificationController::class);
         Route::patch('notifications/{id}/status', [NotificationController::class, 'updateStatus']);
+        
+        // Get notifications by type
+        Route::get('notifications/type/{type}', [NotificationController::class, 'getNotificationsByType']);
+        Route::get('notifications/type/payment', [NotificationController::class, 'findByTypePayment']);
+        Route::get('notifications/type/leave', [NotificationController::class, 'findByTypeLeave']);
+        Route::get('notifications/type/student', [NotificationController::class, 'findByTypeStudent']);
+        Route::get('notifications/type/teacher', [NotificationController::class, 'findByTypeTeacher']);
+        Route::get('notifications/type/assignment', [NotificationController::class, 'findByTypeAssignment']);
+        Route::get('notifications/type/attendance', [NotificationController::class, 'findByTypeAttendance']);
+        Route::get('notifications/type/grade', [NotificationController::class, 'findByTypeGrade']);
+        
+        // Get notifications by status
+        Route::get('notifications/status/read', [NotificationController::class, 'findByStatusRead']);
+        Route::get('notifications/status/unread', [NotificationController::class, 'findByStatusUnread']);
+        
+        // Get notifications by user
+        Route::get('notifications/user/{userId}', [NotificationController::class, 'getNotificationsByUser']);
+        
+        // Get notifications by date
+        Route::get('notifications/today', [NotificationController::class, 'getTodayNotifications']);
+        Route::get('notifications/date-range/{startDate}/{endDate}', [NotificationController::class, 'getNotificationsByDateRange']);
+        
+        // Mark notifications as read
+        Route::patch('notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+        Route::patch('notifications/mark-all-as-read/{userId}', [NotificationController::class, 'markAllAsRead']);
     });
 
     // Article

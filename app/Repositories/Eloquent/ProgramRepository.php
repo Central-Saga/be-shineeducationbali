@@ -55,6 +55,19 @@ class ProgramRepository implements ProgramRepositoryInterface
     }
 
     /**
+     * Mengambil program berdasarkan status.
+     *
+     * @param string $status
+     * @return mixed
+     */
+    public function getProgramsByStatus($status)
+    {
+        return $this->model->where('status', $status)
+                          ->with('educationLevel', 'subject', 'classType', 'meetingFrequency')
+                          ->get();
+    }
+
+    /**
      * Membuat program baru.
      *
      * @param array $data
@@ -119,7 +132,7 @@ class ProgramRepository implements ProgramRepositoryInterface
     }
 
     /**
-     * Helper method untuk menemukan frekuensi pertemuan berdasarkan ID.
+     * Helper method untuk menemukan program berdasarkan ID.
      *
      * @param int $id
      * @return mixed

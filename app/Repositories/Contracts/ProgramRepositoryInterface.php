@@ -28,6 +28,14 @@ interface ProgramRepositoryInterface
     public function getProgramByName($name);
 
     /**
+     * Mengambil program berdasarkan status.
+     *
+     * @param string $status
+     * @return mixed
+     */
+    public function getProgramsByStatus($status);
+
+    /**
      * Membuat program baru.
      *
      * @param array $data

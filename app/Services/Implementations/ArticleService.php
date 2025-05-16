@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Implementations;
 
-use App\Repositories\ArticleRepositoryInterface;
+use App\Repositories\Contracts\ArticleRepositoryInterface;
 use App\Models\Article;
+use App\Services\Contracts\ArticleServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -113,8 +114,10 @@ class ArticleService implements ArticleServiceInterface
     {
         Cache::forget('articles_all');
         Cache::forget('articles_recent_10'); // Sesuaikan dengan limit default
-        // Untuk efisiensi, kita bisa menghapus cache spesifik berdasarkan ID,
-        // tetapi untuk saat ini kita hapus semua cache terkait article.
-        Cache::tags(['articles'])->flush();
+        
+        // Clear specific article caches
+        foreach (range(1, 100) as $id) { // Assumes articles IDs up to 100
+            Cache::forget("article_{$id}");
+        }
     }
 }

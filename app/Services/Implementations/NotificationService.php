@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Implementations;
 
-use App\Repositories\NotificationRepositoryInterface;
+use App\Repositories\Contracts\NotificationRepositoryInterface;
 use App\Models\Notification;
+use App\Services\Contracts\NotificationServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,6 +16,22 @@ class NotificationService implements NotificationServiceInterface
      * @var NotificationRepositoryInterface
      */
     protected $notificationRepository;
+
+    /**
+     * Cache key constants.
+     */
+    private const CACHE_KEYS = [
+        'ALL' => 'notifications.all',
+        'UNREAD' => 'notifications.unread',
+        'STATUS' => 'notifications.status.',
+        'TYPE' => 'notifications.type.',
+        'BY_ID' => 'notifications.id.',
+    ];
+
+    /**
+     * Cache duration in seconds (1 hour).
+     */
+    private const CACHE_DURATION = 3600;
 
     /**
      * Konstruktor untuk menginisialisasi repository.
@@ -33,7 +50,7 @@ class NotificationService implements NotificationServiceInterface
      */
     public function getAllNotifications(): Collection
     {
-        return Cache::remember('notifications_all', 60 * 60, function () {
+        return Cache::remember(self::CACHE_KEYS['ALL'], self::CACHE_DURATION, function () {
             return $this->notificationRepository->getAll();
         });
     }
@@ -46,7 +63,7 @@ class NotificationService implements NotificationServiceInterface
      */
     public function getNotificationById(int $id): Notification
     {
-        return Cache::remember("notification_{$id}", 60 * 60, function () use ($id) {
+        return Cache::remember(self::CACHE_KEYS['BY_ID'] . $id, self::CACHE_DURATION, function () use ($id) {
             return $this->notificationRepository->findById($id);
         });
     }
@@ -58,7 +75,7 @@ class NotificationService implements NotificationServiceInterface
      */
     public function getUnreadNotifications(): Collection
     {
-        return Cache::remember('notifications_unread', 60 * 60, function () {
+        return Cache::remember(self::CACHE_KEYS['UNREAD'], self::CACHE_DURATION, function () {
             return $this->notificationRepository->findByStatus('unread');
         });
     }
@@ -71,7 +88,7 @@ class NotificationService implements NotificationServiceInterface
      */
     public function getNotificationsByType(string $type): Collection
     {
-        return Cache::remember("notifications_by_type_{$type}", 60 * 60, function () use ($type) {
+        return Cache::remember(self::CACHE_KEYS['TYPE'] . strtolower($type), self::CACHE_DURATION, function () use ($type) {
             return $this->notificationRepository->findByType($type);
         });
     }
@@ -83,7 +100,7 @@ class NotificationService implements NotificationServiceInterface
      */
     public function findByTypePayment(): Collection
     {
-        return Cache::remember('notifications_type_payment', 60 * 60, function () {
+        return Cache::remember(self::CACHE_KEYS['TYPE'] . 'payment', self::CACHE_DURATION, function () {
             return $this->notificationRepository->findByType('Payment');
         });
     }
@@ -95,7 +112,7 @@ class NotificationService implements NotificationServiceInterface
      */
     public function findByTypeLeave(): Collection
     {
-        return Cache::remember('notifications_type_leave', 60 * 60, function () {
+        return Cache::remember(self::CACHE_KEYS['TYPE'] . 'leave', self::CACHE_DURATION, function () {
             return $this->notificationRepository->findByType('Leave');
         });
     }
@@ -107,7 +124,7 @@ class NotificationService implements NotificationServiceInterface
      */
     public function findByStatusRead(): Collection
     {
-        return Cache::remember('notifications_status_read', 60 * 60, function () {
+        return Cache::remember(self::CACHE_KEYS['STATUS'] . 'read', self::CACHE_DURATION, function () {
             return $this->notificationRepository->findByStatus('read');
         });
     }
@@ -119,7 +136,7 @@ class NotificationService implements NotificationServiceInterface
      */
     public function findByStatusUnread(): Collection
     {
-        return Cache::remember('notifications_status_unread', 60 * 60, function () {
+        return Cache::remember(self::CACHE_KEYS['STATUS'] . 'unread', self::CACHE_DURATION, function () {
             return $this->notificationRepository->findByStatus('unread');
         });
     }
@@ -171,14 +188,12 @@ class NotificationService implements NotificationServiceInterface
      */
     protected function clearCache(): void
     {
-        Cache::forget('notifications_all');
-        Cache::forget('notifications_unread');
-        Cache::forget('notifications_status_read');
-        Cache::forget('notifications_status_unread');
-        Cache::forget('notifications_type_payment');
-        Cache::forget('notifications_type_leave');
-        // Untuk efisiensi, kita bisa menghapus cache spesifik berdasarkan ID atau tipe,
-        // tetapi untuk saat ini kita hapus semua cache terkait notification.
-        Cache::tags(['notifications'])->flush();
+        Cache::forget(self::CACHE_KEYS['ALL']);
+        Cache::forget(self::CACHE_KEYS['UNREAD']);
+        Cache::forget(self::CACHE_KEYS['STATUS'] . 'read');
+        Cache::forget(self::CACHE_KEYS['STATUS'] . 'unread');
+        Cache::forget(self::CACHE_KEYS['TYPE'] . 'payment');
+        Cache::forget(self::CACHE_KEYS['TYPE'] . 'leave');
+        Cache::forget(self::CACHE_KEYS['TYPE'] . 'grade');
     }
 }

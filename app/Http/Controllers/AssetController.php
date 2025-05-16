@@ -48,6 +48,10 @@ class AssetController extends Controller
         $assets = $this->assetService->getAssets($modelType, $modelId);
 
         return AssetResource::collection($assets)
+            ->additional([
+                'status' => 'success',
+                'message' => 'Data asset berhasil diambil'
+            ])
             ->response()
             ->setStatusCode(200);
     }

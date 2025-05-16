@@ -11,6 +11,8 @@ class ProgramService implements ProgramServiceInterface
     protected $repository;
 
     const PROGRAMS_ALL_CACHE_KEY = 'programs_all';
+    const PROGRAMS_ACTIVE_CACHE_KEY = 'programs_active';
+    const PROGRAMS_INACTIVE_CACHE_KEY = 'programs_inactive';
 
     public function __construct(ProgramRepositoryInterface $repository)
     {
@@ -26,6 +28,30 @@ class ProgramService implements ProgramServiceInterface
     {
         return Cache::remember(self::PROGRAMS_ALL_CACHE_KEY, 3600, function () {
             return $this->repository->getAllPrograms();
+        });
+    }
+
+    /**
+     * Mengambil program yang aktif.
+     *
+     * @return mixed
+     */
+    public function getActivePrograms()
+    {
+        return Cache::remember(self::PROGRAMS_ACTIVE_CACHE_KEY, 3600, function () {
+            return $this->repository->getProgramsByStatus('Aktif');
+        });
+    }
+
+    /**
+     * Mengambil program yang tidak aktif.
+     *
+     * @return mixed
+     */
+    public function getInactivePrograms()
+    {
+        return Cache::remember(self::PROGRAMS_INACTIVE_CACHE_KEY, 3600, function () {
+            return $this->repository->getProgramsByStatus('Non Aktif');
         });
     }
 
@@ -59,9 +85,11 @@ class ProgramService implements ProgramServiceInterface
      */
     public function createProgram(array $data)
     {
-        $result = $this->repository->createProgram($data);
-        $this->clearProgramCaches();
-        return $result;
+        $program = $this->repository->createProgram($data);
+        if ($program) {
+            $this->clearCache();
+        }
+        return $program;
     }
 
     /**
@@ -73,32 +101,53 @@ class ProgramService implements ProgramServiceInterface
      */
     public function updateProgram($id, array $data)
     {
-        $result = $this->repository->updateProgram($id, $data);
-        $this->clearProgramCaches();
-        return $result;
+        $program = $this->repository->updateProgram($id, $data);
+        if ($program) {
+            $this->clearCache();
+        }
+        return $program;
     }
 
     /**
      * Menghapus program berdasarkan ID.
      *
      * @param int $id
-     * @return bool
+     * @return mixed
      */
     public function deleteProgram($id)
     {
         $result = $this->repository->deleteProgram($id);
-        $this->clearProgramCaches();
-
+        if ($result) {
+            $this->clearCache();
+        }
         return $result;
     }
 
     /**
-     * Menghapus semua cache program
+     * Memperbarui status program berdasarkan ID.
+     *
+     * @param int $id
+     * @param array $data
+     * @return mixed
+     */
+    public function updateStatus($id, array $data)
+    {
+        $program = $this->repository->updateProgram($id, $data);
+        if ($program) {
+            $this->clearCache();
+        }
+        return $program;
+    }
+
+    /**
+     * Membersihkan cache.
      *
      * @return void
      */
-    public function clearProgramCaches()
+    protected function clearCache()
     {
         Cache::forget(self::PROGRAMS_ALL_CACHE_KEY);
+        Cache::forget(self::PROGRAMS_ACTIVE_CACHE_KEY);
+        Cache::forget(self::PROGRAMS_INACTIVE_CACHE_KEY);
     }
 }

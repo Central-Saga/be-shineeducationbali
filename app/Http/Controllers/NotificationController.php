@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\NotificationStoreRequest;
 use App\Http\Requests\NotificationUpdateRequest;
 use App\Http\Resources\NotificationResource;
-use App\Services\NotificationServiceInterface;
+use App\Services\Contracts\NotificationServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

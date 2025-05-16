@@ -2,27 +2,27 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Schema;
 use App\Models\Student;
 use App\Services\LeaveService;
-use App\Services\ArticleService;
 use App\Services\JobVacancyService;
+use App\Services\Contracts\ArticleServiceInterface;
+use App\Services\Implementations\ArticleService;
+use App\Repositories\Contracts\ArticleRepositoryInterface;
+use App\Repositories\Eloquent\ArticleRepository;
 use App\Repositories\LeaveRepository;
-use App\Services\NotificationService;
-use Illuminate\Support\Facades\Schema;
-use App\Repositories\ArticleRepository;
+use App\Services\Implementations\NotificationService;
 use App\Services\JobApplicationService;
 use App\Services\LeaveServiceInterface;
 use Illuminate\Support\ServiceProvider;
-use App\Services\ArticleServiceInterface;
-use App\Repositories\NotificationRepository;
-use App\Services\JobVacancyServiceInterface;
+use App\Repositories\Eloquent\NotificationRepository;
+use App\Repositories\Contracts\NotificationRepositoryInterface;
+use App\Services\Contracts\NotificationServiceInterface;
 use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\Implementations\RoleService;
 use App\Services\Implementations\UserService;
 use App\Repositories\LeaveRepositoryInterface;
-use App\Services\NotificationServiceInterface;
-use App\Repositories\ArticleRepositoryInterface;
 use App\Repositories\Eloquent\GradeRepository;
 use App\Services\Implementations\GradeService;
 use App\Repositories\Eloquent\ProgramRepository;
@@ -55,7 +55,6 @@ use App\Services\Implementations\AssignmentService;
 use App\Services\Implementations\PermissionService;
 use App\Repositories\Eloquent\CertificateRepository;
 use App\Services\Contracts\MaterialServiceInterface;
-use App\Repositories\NotificationRepositoryInterface;
 use App\Services\Contracts\ScheduleServiceInterface;
 use App\Services\Implementations\CertificateService;
 use App\Services\Contracts\ClassRoomServiceInterface;
@@ -138,6 +137,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Article bindings
+        $this->app->bind(\App\Repositories\Contracts\ArticleRepositoryInterface::class, \App\Repositories\Eloquent\ArticleRepository::class);
+        $this->app->bind(\App\Services\Contracts\ArticleServiceInterface::class, \App\Services\Implementations\ArticleService::class);
+
         // Binding User
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
@@ -190,15 +193,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
         $this->app->bind(NotificationServiceInterface::class, NotificationService::class);
 
-        // Binding Article
-        $this->app->bind(ArticleRepositoryInterface::class, ArticleRepository::class);
-        $this->app->bind(ArticleServiceInterface::class, ArticleService::class);
-
         // Binding Job Vacancy
         $this->app->bind(JobVacancyRepositoryInterface::class, JobVacancyRepository::class);
         $this->app->bind(JobVacancyServiceInterface::class, JobVacancyService::class);
 
-        // Binding JobApplication
+        // Binding JobApplication 
         $this->app->bind(JobApplicationRepositoryInterface::class, JobApplicationRepository::class);
         $this->app->bind(JobApplicationServiceInterface::class, JobApplicationService::class);
 
