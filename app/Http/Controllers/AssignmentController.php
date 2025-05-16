@@ -8,6 +8,7 @@ use App\Http\Resources\AssignmentResource;
 use App\Http\Requests\AssignmentStoreRequest;
 use App\Http\Requests\AssignmentUpdateRequest;
 use App\Services\Contracts\AssignmentServiceInterface;
+use Illuminate\Support\Facades\Log;
 
 class AssignmentController extends Controller
 {
@@ -26,24 +27,45 @@ class AssignmentController extends Controller
         try {
             $status = $request->query('status');
 
+            // Log untuk debugging
+            Log::info('Assignment status query:', ['status' => $status]);
+
             if ($status === null) {
                 $assignments = $this->assignmentService->getAllAssignments();
-            } elseif ($status === '0') {
-                $assignments = $this->assignmentService->getAssignmentByPending();
-            } elseif ($status === '1') {
-                $assignments = $this->assignmentService->getAssignmentByCompleted();
-            } elseif ($status === '2') {
-                $assignments = $this->assignmentService->getAssignmentByRejected();
-            } elseif ($status === '3') {
-                $assignments = $this->assignmentService->getAssignmentByNotCompleted();
             } else {
-                return response()->json([
-                    'message' => 'Status tidak valid. Status yang tersedia: pending, submitted, graded'
-                ], 400);
+                // Konversi status numerik ke string status yang sesuai
+                $statusMap = [
+                    '0' => 'Dalam Pengajuan',
+                    '1' => 'Terselesaikan',
+                    '2' => 'Ditolak',
+                    '3' => 'Belum Terselesaikan'
+                ];
+
+                if (!isset($statusMap[$status])) {
+                    return response()->json([
+                        'message' => 'Status tidak valid. Status yang tersedia: 0 (Dalam Pengajuan), 1 (Terselesaikan), 2 (Ditolak), 3 (Belum Terselesaikan)'
+                    ], 400);
+                }
+
+                // Log untuk debugging
+                Log::info('Mapped status:', ['mapped_status' => $statusMap[$status]]);
+
+                // Gunakan repository untuk mengambil data berdasarkan status
+                $assignments = $this->assignmentService->getAssignmentByStatus($statusMap[$status]);
             }
 
-            return AssignmentResource::collection($assignments);
+            // Log response untuk debugging
+            Log::info('Found assignments:', [
+                'count' => $assignments->count(),
+                'first_item' => $assignments->first()
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => AssignmentResource::collection($assignments)
+            ]);
         } catch (\Exception $e) {
+            Log::error('Error in AssignmentController@index: ' . $e->getMessage());
             return response()->json([
                 'message' => $e->getMessage()
             ], 500);

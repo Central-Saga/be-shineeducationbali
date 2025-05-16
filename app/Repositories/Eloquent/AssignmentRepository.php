@@ -35,7 +35,6 @@ class AssignmentRepository implements AssignmentRepositoryInterface
     public function getAssignmentById($id)
     {
         try {
-            // Mengambil permission berdasarkan ID, handle jika tidak ditemukan
             return $this->model->with('classRoom')->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             Log::error("Assignment with ID {$id} not found.");
@@ -62,7 +61,20 @@ class AssignmentRepository implements AssignmentRepositoryInterface
      */
     public function getAssignmentByStatus($status)
     {
-        return $this->model->with('classRoom')->where('status', $status)->get();
+        // Log sebelum query
+        Log::info('Getting assignments with status:', ['status' => $status]);
+        
+        $assignments = $this->model->with('classRoom')->where('status', $status)->get();
+        
+        // Log hasil query
+        Log::info('Query result:', [
+            'status' => $status,
+            'count' => $assignments->count(),
+            'sql' => $this->model->with('classRoom')->where('status', $status)->toSql(),
+            'bindings' => $this->model->with('classRoom')->where('status', $status)->getBindings()
+        ]);
+        
+        return $assignments;
     }
 
     /**
@@ -72,7 +84,7 @@ class AssignmentRepository implements AssignmentRepositoryInterface
      */
     public function getAssignmentByNotCompleted()
     {
-        return $this->model->with('classRoom')->where('status', 'not_completed')->get();
+        return $this->model->with('classRoom')->where('status', Assignment::STATUS_NOT_COMPLETED)->get();
     }
 
     /**
@@ -82,7 +94,7 @@ class AssignmentRepository implements AssignmentRepositoryInterface
      */
     public function getAssignmentByCompleted()
     {
-        return $this->model->with('classRoom')->where('status', 'completed')->get();
+        return $this->model->with('classRoom')->where('status', Assignment::STATUS_COMPLETED)->get();
     }
 
     /**
@@ -92,7 +104,7 @@ class AssignmentRepository implements AssignmentRepositoryInterface
      */
     public function getAssignmentByRejected()
     {
-        return $this->model->with('classRoom')->where('status', 'rejected')->get();
+        return $this->model->with('classRoom')->where('status', Assignment::STATUS_REJECTED)->get();
     }
 
     /**
@@ -102,7 +114,7 @@ class AssignmentRepository implements AssignmentRepositoryInterface
      */
     public function getAssignmentByPending()
     {
-        return $this->model->with('classRoom')->where('status', 'pending')->get();
+        return $this->model->with('classRoom')->where('status', Assignment::STATUS_PENDING)->get();
     }
 
     /**

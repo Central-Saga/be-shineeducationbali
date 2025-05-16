@@ -5,6 +5,8 @@ namespace App\Services\Implementations;
 use App\Services\Contracts\AssignmentServiceInterface;
 use App\Repositories\Contracts\AssignmentRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use App\Models\Assignment;
 
 class AssignmentService implements AssignmentServiceInterface
 {
@@ -15,6 +17,7 @@ class AssignmentService implements AssignmentServiceInterface
     const ASSIGNMENTS_COMPLETED_CACHE_KEY = 'assignments_completed';
     const ASSIGNMENTS_REJECTED_CACHE_KEY = 'assignments_rejected';
     const ASSIGNMENTS_PENDING_CACHE_KEY = 'assignments_pending';
+    const ASSIGNMENTS_BY_STATUS_CACHE_KEY = 'assignments_by_status_';
 
     public function __construct(AssignmentRepositoryInterface $repository)
     {
@@ -63,7 +66,39 @@ class AssignmentService implements AssignmentServiceInterface
      */
     public function getAssignmentByStatus($status)
     {
-        return $this->repository->getAssignmentByStatus($status);
+        // Log untuk debugging
+        Log::info('Getting assignments by status:', ['status' => $status]);
+
+        // Validasi status yang diterima
+        $validStatuses = [
+            Assignment::STATUS_PENDING,
+            Assignment::STATUS_COMPLETED,
+            Assignment::STATUS_REJECTED,
+            Assignment::STATUS_NOT_COMPLETED
+        ];
+
+        if (!in_array($status, $validStatuses)) {
+            Log::error('Invalid status requested:', [
+                'provided_status' => $status,
+                'valid_statuses' => $validStatuses
+            ]);
+            throw new \InvalidArgumentException('Status tidak valid');
+        }
+
+        $cacheKey = self::ASSIGNMENTS_BY_STATUS_CACHE_KEY . strtolower(str_replace(' ', '_', $status));
+        
+        return Cache::remember($cacheKey, 3600, function () use ($status) {
+            $assignments = $this->repository->getAssignmentByStatus($status);
+            
+            // Log untuk debugging
+            Log::info('Found assignments:', [
+                'status' => $status,
+                'count' => $assignments->count(),
+                'first_assignment' => $assignments->first()
+            ]);
+            
+            return $assignments;
+        });
     }
 
     /**
@@ -74,7 +109,7 @@ class AssignmentService implements AssignmentServiceInterface
     public function getAssignmentByNotCompleted()
     {
         return Cache::remember(self::ASSIGNMENTS_NOT_COMPLETED_CACHE_KEY, 3600, function () {
-            return $this->repository->getAssignmentByNotCompleted();
+            return $this->repository->getAssignmentByStatus(Assignment::STATUS_NOT_COMPLETED);
         });
     }
 
@@ -86,7 +121,7 @@ class AssignmentService implements AssignmentServiceInterface
     public function getAssignmentByCompleted()
     {
         return Cache::remember(self::ASSIGNMENTS_COMPLETED_CACHE_KEY, 3600, function () {
-            return $this->repository->getAssignmentByCompleted();
+            return $this->repository->getAssignmentByStatus(Assignment::STATUS_COMPLETED);
         });
     }
 
@@ -98,7 +133,7 @@ class AssignmentService implements AssignmentServiceInterface
     public function getAssignmentByRejected()
     {
         return Cache::remember(self::ASSIGNMENTS_REJECTED_CACHE_KEY, 3600, function () {
-            return $this->repository->getAssignmentByRejected();
+            return $this->repository->getAssignmentByStatus(Assignment::STATUS_REJECTED);
         });
     }
 
@@ -110,7 +145,7 @@ class AssignmentService implements AssignmentServiceInterface
     public function getAssignmentByPending()
     {
         return Cache::remember(self::ASSIGNMENTS_PENDING_CACHE_KEY, 3600, function () {
-            return $this->repository->getAssignmentByPending();
+            return $this->repository->getAssignmentByStatus(Assignment::STATUS_PENDING);
         });
     }
 
@@ -136,9 +171,29 @@ class AssignmentService implements AssignmentServiceInterface
      */
     public function updateAssignment($id, array $data)
     {
-        $result = $this->repository->updateAssignment($id, $data);
-        $this->clearAssignmentCaches();
-        return $result;
+        // Log untuk debugging
+        Log::info('Updating assignment:', [
+            'id' => $id,
+            'data' => $data
+        ]);
+
+        $assignment = $this->repository->updateAssignment($id, $data);
+        
+        if ($assignment) {
+            // Clear all related caches when assignment is updated
+            $this->clearAssignmentCache();
+            
+            Log::info('Assignment updated successfully:', [
+                'id' => $id,
+                'new_status' => $assignment->status
+            ]);
+        } else {
+            Log::error('Failed to update assignment:', [
+                'id' => $id
+            ]);
+        }
+        
+        return $assignment;
     }
 
     /**
@@ -167,5 +222,43 @@ class AssignmentService implements AssignmentServiceInterface
         Cache::forget(self::ASSIGNMENTS_COMPLETED_CACHE_KEY);
         Cache::forget(self::ASSIGNMENTS_REJECTED_CACHE_KEY);
         Cache::forget(self::ASSIGNMENTS_PENDING_CACHE_KEY);
+        
+        // Clear status-specific caches
+        $statuses = [
+            'dalam_pengajuan',
+            'terselesaikan',
+            'ditolak',
+            'belum_terselesaikan'
+        ];
+        
+        foreach ($statuses as $status) {
+            Cache::forget(self::ASSIGNMENTS_BY_STATUS_CACHE_KEY . $status);
+        }
+    }
+
+    /**
+     * Clear cache when assignment status changes
+     */
+    private function clearAssignmentCache()
+    {
+        Cache::forget(self::ASSIGNMENTS_ALL_CACHE_KEY);
+        Cache::forget(self::ASSIGNMENTS_NOT_COMPLETED_CACHE_KEY);
+        Cache::forget(self::ASSIGNMENTS_COMPLETED_CACHE_KEY);
+        Cache::forget(self::ASSIGNMENTS_REJECTED_CACHE_KEY);
+        Cache::forget(self::ASSIGNMENTS_PENDING_CACHE_KEY);
+        
+        // Clear status-specific caches
+        $statuses = [
+            'dalam_pengajuan',
+            'terselesaikan',
+            'ditolak',
+            'belum_terselesaikan'
+        ];
+        
+        foreach ($statuses as $status) {
+            Cache::forget(self::ASSIGNMENTS_BY_STATUS_CACHE_KEY . $status);
+        }
+
+        Log::info('Assignment caches cleared');
     }
 }
