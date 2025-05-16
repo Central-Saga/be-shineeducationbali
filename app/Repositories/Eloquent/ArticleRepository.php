@@ -43,7 +43,7 @@ class ArticleRepository implements ArticleRepositoryInterface
      */
     public function findById(int $id): ?Article
     {
-        return $this->model->with('user')->find($id);
+        return $this->model->find($id)?->load('user');
     }
 
     /**

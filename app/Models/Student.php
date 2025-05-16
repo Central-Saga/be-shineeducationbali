@@ -84,6 +84,16 @@ class Student extends Model
     }
 
     /**
+     * Get all certificates for this student
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    /**
      * Definisikan hubungan dengan model StudentQuota.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

@@ -39,13 +39,28 @@ class CertificateController extends Controller
      */
     public function store(CertificateStoreRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $certificate = $this->certificateService->createCertificate($data);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Certificate berhasil dibuat',
-            'data' => new CertificateResource($certificate),
-        ], 201);
+        try {
+            $data = $request->validated();
+            $certificate = $this->certificateService->createCertificate($data);
+            
+            if (!$certificate) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal membuat certificate'
+                ], 400);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Certificate berhasil dibuat',
+                'data' => new CertificateResource($certificate)
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -56,11 +71,26 @@ class CertificateController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $certificate = $this->certificateService->getCertificateById($id);
-        return response()->json([
-            'status' => 'success',
-            'data' => new CertificateResource($certificate),
-        ], 200);
+        try {
+            $certificate = $this->certificateService->getCertificateById($id);
+            
+            if (!$certificate) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Certificate tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => new CertificateResource($certificate)
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -72,13 +102,28 @@ class CertificateController extends Controller
      */
     public function update(CertificateUpdateRequest $request, int $id): JsonResponse
     {
-        $data = $request->validated();
-        $certificate = $this->certificateService->updateCertificate($id, $data);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Certificate berhasil diperbarui',
-            'data' => new CertificateResource($certificate),
-        ], 200);
+        try {
+            $data = $request->validated();
+            $certificate = $this->certificateService->updateCertificate($id, $data);
+
+            if (!$certificate) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Certificate tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Certificate berhasil diperbarui',
+                'data' => new CertificateResource($certificate)
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -89,10 +134,25 @@ class CertificateController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $this->certificateService->deleteCertificate($id);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Certificate berhasil dihapus',
-        ], 200);
+        try {
+            $result = $this->certificateService->deleteCertificate($id);
+
+            if (!$result) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Certificate tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Certificate berhasil dihapus'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
