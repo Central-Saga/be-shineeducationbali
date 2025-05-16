@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Contracts;
 
 use App\Models\Leave;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,10 +33,10 @@ interface LeaveServiceInterface
     /**
      * Mendapatkan data leave berdasarkan status.
      *
-     * @param string $status
+     * @param int $status 0: ditolak, 1: disetujui, 2: menunggu konfirmasi
      * @return Collection
      */
-    public function getLeaveByStatus(string $status): Collection;
+    public function getLeaveByStatus(int $status): Collection;
 
     /**
      * Mendapatkan data leave dengan status ditolak.

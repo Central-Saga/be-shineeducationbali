@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Implementations;
 
-use App\Repositories\LeaveRepositoryInterface;
+use App\Repositories\Contracts\LeaveRepositoryInterface;
+use App\Services\Contracts\LeaveServiceInterface;
 use App\Models\Leave;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -71,14 +72,20 @@ class LeaveService implements LeaveServiceInterface
     /**
      * Mendapatkan data leave berdasarkan status.
      *
-     * @param string $status
+     * @param int $status 0: ditolak, 1: disetujui, 2: menunggu konfirmasi
      * @return Collection
      */
-    public function getLeaveByStatus(string $status): Collection
+    public function getLeaveByStatus(int $status): Collection
     {
-        return Cache::remember("leaves_by_status_{$status}", 60 * 60, function () use ($status) {
+        if (!array_key_exists($status, Leave::$statusMap)) {
+            throw new \InvalidArgumentException('Parameter status tidak valid. Gunakan 0 (ditolak), 1 (disetujui), atau 2 (menunggu konfirmasi).');
+        }
+
+        $statusString = Leave::getStatusString($status);
+
+        return Cache::remember("leaves_by_status_{$status}", 60 * 60, function () use ($statusString) {
             return Leave::with('user')
-                ->where('status', $status)
+                ->where('status', $statusString)
                 ->get();
         });
     }
@@ -90,7 +97,7 @@ class LeaveService implements LeaveServiceInterface
      */
     public function getLeaveByRejected(): Collection
     {
-        return $this->getLeaveByStatus('ditolak');
+        return $this->getLeaveByStatus(Leave::STATUS_REJECTED);
     }
 
     /**
@@ -100,7 +107,7 @@ class LeaveService implements LeaveServiceInterface
      */
     public function getLeaveByConfirmation(): Collection
     {
-        return $this->getLeaveByStatus('disetujui');
+        return $this->getLeaveByStatus(Leave::STATUS_APPROVED);
     }
 
     /**
@@ -110,7 +117,7 @@ class LeaveService implements LeaveServiceInterface
      */
     public function getLeaveByWaiting(): Collection
     {
-        return $this->getLeaveByStatus('menunggu konfirmasi');
+        return $this->getLeaveByStatus(Leave::STATUS_PENDING);
     }
 
     /**
@@ -160,9 +167,17 @@ class LeaveService implements LeaveServiceInterface
      */
     protected function clearCache(): void
     {
+        // Hapus cache untuk semua data
         Cache::forget('leaves_all');
-        // Untuk efisiensi, kita bisa menghapus cache spesifik berdasarkan ID atau status,
-        // tetapi untuk saat ini kita hapus semua cache terkait leave.
-        Cache::tags(['leaves'])->flush();
+        
+        // Hapus cache untuk status
+        foreach ([0, 1, 2] as $status) {
+            Cache::forget("leaves_by_status_{$status}");
+        }
+        
+        // Hapus cache untuk data spesifik jika ada
+        if (isset($this->id)) {
+            Cache::forget("leave_{$this->id}");
+        }
     }
 }

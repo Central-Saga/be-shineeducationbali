@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
 
 use App\Models\Leave;
+use App\Repositories\Contracts\LeaveRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class LeaveRepository implements LeaveRepositoryInterface

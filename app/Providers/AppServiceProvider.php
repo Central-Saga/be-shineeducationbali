@@ -4,16 +4,16 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Schema;
 use App\Models\Student;
-use App\Services\LeaveService;
+use App\Services\Implementations\LeaveService;
 use App\Services\JobVacancyService;
 use App\Services\Contracts\ArticleServiceInterface;
 use App\Services\Implementations\ArticleService;
 use App\Repositories\Contracts\ArticleRepositoryInterface;
 use App\Repositories\Eloquent\ArticleRepository;
-use App\Repositories\LeaveRepository;
+use App\Repositories\Eloquent\LeaveRepository;
 use App\Services\Implementations\NotificationService;
 use App\Services\JobApplicationService;
-use App\Services\LeaveServiceInterface;
+use App\Services\Contracts\LeaveServiceInterface;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\NotificationRepository;
 use App\Repositories\Contracts\NotificationRepositoryInterface;
@@ -22,7 +22,7 @@ use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\Implementations\RoleService;
 use App\Services\Implementations\UserService;
-use App\Repositories\LeaveRepositoryInterface;
+use App\Repositories\Contracts\LeaveRepositoryInterface;
 use App\Repositories\Eloquent\GradeRepository;
 use App\Services\Implementations\GradeService;
 use App\Repositories\Eloquent\ProgramRepository;
@@ -186,8 +186,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(StudentServiceInterface::class, StudentService::class);
 
         // Binding Leave
-        $this->app->bind(LeaveRepositoryInterface::class, LeaveRepository::class);
-        $this->app->bind(LeaveServiceInterface::class, LeaveService::class);
+        $this->app->bind(LeaveRepositoryInterface::class, \App\Repositories\Eloquent\LeaveRepository::class);
+        $this->app->bind(LeaveServiceInterface::class, \App\Services\Implementations\LeaveService::class);
 
         // Binding Notification
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);

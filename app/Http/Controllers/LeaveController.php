@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LeaveStoreRequest;
 use App\Http\Requests\LeaveUpdateRequest;
 use App\Http\Resources\LeaveResource;
-use App\Services\LeaveServiceInterface;
+use App\Services\Contracts\LeaveServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -42,18 +42,19 @@ class LeaveController extends Controller
         if ($status === null) {
             // Jika tidak ada query parameter, ambil semua leave
             $leaves = $this->leaveService->getAllLeaves();
-        } elseif ($status == 'disetujui') {
-            // Jika status = 'disetujui', ambil leave dengan status disetujui
-            $leaves = $this->leaveService->getLeaveByConfirmation();
-        } elseif ($status == 'ditolak') {
-            // Jika status = 'ditolak', ambil leave dengan status ditolak
-            $leaves = $this->leaveService->getLeaveByRejected();
-        } elseif ($status == 'menunggu konfirmasi') {
-            // Jika status = 'menunggu konfirmasi', ambil leave dengan status menunggu konfirmasi
-            $leaves = $this->leaveService->getLeaveByWaiting();
+        } elseif (is_numeric($status)) {
+            // Convert string number to integer
+            $statusCode = (int) $status;
+            if ($statusCode >= 0 && $statusCode <= 2) {
+                $leaves = $this->leaveService->getLeaveByStatus($statusCode);
+            } else {
+                return response()->json([
+                    'message' => 'Parameter status tidak valid. Gunakan: 0 (ditolak), 1 (disetujui), atau 2 (menunggu konfirmasi)'
+                ], 400);
+            }
         } else {
             return response()->json([
-                'error' => 'Parameter status tidak valid. Gunakan "disetujui", "ditolak", atau "menunggu konfirmasi".'
+                'message' => 'Parameter status harus berupa angka. Gunakan: 0 (ditolak), 1 (disetujui), atau 2 (menunggu konfirmasi)'
             ], 400);
         }
 

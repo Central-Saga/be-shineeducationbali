@@ -10,6 +10,44 @@ class Leave extends Model
 {
     use HasFactory;
 
+    // Status constants
+    const STATUS_REJECTED = 0;
+    const STATUS_APPROVED = 1;
+    const STATUS_PENDING = 2;
+
+    /**
+     * Status mapping array
+     */
+    public static $statusMap = [
+        self::STATUS_REJECTED => 'ditolak',
+        self::STATUS_APPROVED => 'disetujui',
+        self::STATUS_PENDING => 'menunggu konfirmasi'
+    ];
+
+    /**
+     * Convert numeric status to string
+     */
+    public static function getStatusString(int $status): string
+    {
+        return self::$statusMap[$status] ?? throw new \InvalidArgumentException('Invalid status code');
+    }
+
+    /**
+     * Convert string status to numeric
+     */
+    public static function getStatusCode(string $status): int
+    {
+        return array_flip(self::$statusMap)[$status] ?? throw new \InvalidArgumentException('Invalid status string');
+    }
+
+    /**
+     * Get status as numeric value
+     */
+    public function getStatusCodeAttribute(): int
+    {
+        return self::getStatusCode($this->status);
+    }
+
     /**
      * Nama tabel yang terkait dengan model ini.
      *
