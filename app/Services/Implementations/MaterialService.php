@@ -11,6 +11,8 @@ class MaterialService implements MaterialServiceInterface
     protected $repository;
 
     const MATERIALS_ALL_CACHE_KEY = 'materials_all';
+    const MATERIALS_ACTIVE_CACHE_KEY = 'materials_active';
+    const MATERIALS_INACTIVE_CACHE_KEY = 'materials_inactive';
 
     public function __construct(MaterialRepositoryInterface $repository)
     {
@@ -93,12 +95,38 @@ class MaterialService implements MaterialServiceInterface
     }
 
     /**
+     * Mengambil semua bahan ajar dengan status Aktif.
+     *
+     * @return mixed
+     */
+    public function getActiveMaterials()
+    {
+        return Cache::remember(self::MATERIALS_ACTIVE_CACHE_KEY, 3600, function () {
+            return $this->repository->getAllMaterials()->where('status', 'Aktif');
+        });
+    }
+
+    /**
+     * Mengambil semua bahan ajar dengan status Non Aktif.
+     *
+     * @return mixed
+     */
+    public function getInactiveMaterials()
+    {
+        return Cache::remember(self::MATERIALS_INACTIVE_CACHE_KEY, 3600, function () {
+            return $this->repository->getAllMaterials()->where('status', 'Non Aktif');
+        });
+    }
+
+    /**
      * Menghapus semua cache bahan ajar
      *
      * @return void
      */
-    public function clearMaterialCaches()
+    protected function clearMaterialCaches()
     {
         Cache::forget(self::MATERIALS_ALL_CACHE_KEY);
+        Cache::forget(self::MATERIALS_ACTIVE_CACHE_KEY);
+        Cache::forget(self::MATERIALS_INACTIVE_CACHE_KEY);
     }
 }

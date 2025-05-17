@@ -27,9 +27,20 @@ class TeacherController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $teachers = $this->teacherService->getAllTeachers();
+        $status = $request->query('status');
+
+        if ($status === null) {
+            $teachers = $this->teacherService->getAllTeachers();
+        } elseif ($status == 1) {
+            $teachers = $this->teacherService->getActiveTeachers();
+        } elseif ($status == 0) {
+            $teachers = $this->teacherService->getInactiveTeachers();
+        } else {
+            return response()->json(['error' => 'Invalid status parameter'], 400);
+        }
+
         return TeacherResource::collection($teachers);
     }
 
@@ -74,10 +85,62 @@ class TeacherController extends Controller
      */
     public function destroy(string $id)
     {
-        $deleted = $this->teacherService->deleteTeacher($id);
-        if (!$deleted) {
-            return response()->json(['message' => 'Gagal menghapus data guru'], 400);
+        try {
+            // 1. Check if teacher exists and load related data
+            $teacher = $this->teacherService->getTeacherById($id);
+            if (!$teacher) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Data guru tidak ditemukan',
+                    'error' => 'Teacher not found with ID ' . $id
+                ], 404);
+            }
+
+            // Load related data for the response
+            $teacherData = [
+                'id' => $id,
+                'name' => $teacher->user->name ?? 'Unknown',
+                'subject' => $teacher->subject->name ?? null,
+                'status' => $teacher->status,
+                'deleted_at' => now()->toISOString()
+            ];
+
+            // 2. Attempt to delete the teacher
+            $deleted = $this->teacherService->deleteTeacher($id);
+            if (!$deleted) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal menghapus data guru',
+                    'error' => 'Failed to delete teacher with ID ' . $id,
+                    'details' => 'Teacher could not be deleted. They may have related records that need to be handled first.'
+                ], 400);
+            }
+
+            // 3. Return success response with teacher details
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data guru berhasil dihapus',
+                'data' => $teacherData,
+                'details' => [
+                    'message' => 'The teacher has been successfully deleted from the system. All associated records have been removed.',
+                    'timestamp' => now()->toISOString()
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Failed to delete teacher:', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat menghapus data guru',
+                'error' => $e->getMessage(),
+                'details' => 'An unexpected error occurred while attempting to delete the teacher. Please try again or contact support if the problem persists.'
+            ], 500);
         }
-        return response()->json(null, 204);
     }
 }

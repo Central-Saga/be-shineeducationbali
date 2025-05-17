@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Implementations;
 
 use App\Repositories\Contracts\TestimonialRepositoryInterface;
 use App\Services\Contracts\TestimonialServiceInterface;

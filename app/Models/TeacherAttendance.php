@@ -38,8 +38,8 @@ class TeacherAttendance extends Model
     /**
      * Define status constants
      */
-    const STATUS_PRESENT = 'present';
-    const STATUS_ABSENT = 'absent';
+    const STATUS_PRESENT = 1;
+    const STATUS_ABSENT = 0;
     
     /**
      * Get the teacher that owns the attendance record.
@@ -129,5 +129,36 @@ class TeacherAttendance extends Model
         }
         
         return 0;
+    }
+
+    /**
+     * Get the attendance status attribute.
+     * 
+     * @param  string  $value
+     * @return int
+     */
+    public function getStatusAttribute($value)
+    {
+        // If we have a string value, convert it to numeric
+        if (is_string($value)) {
+            return strtolower($value) === 'present' ? self::STATUS_PRESENT : self::STATUS_ABSENT;
+        }
+        return (int) $value;
+    }
+
+    /**
+     * Set the attendance status attribute.
+     * 
+     * @param  mixed  $value
+     * @return void
+     */
+    public function setStatusAttribute($value)
+    {
+        // If we receive a string value, convert it to numeric
+        if (is_string($value)) {
+            $this->attributes['status'] = strtolower($value) === 'present' ? self::STATUS_PRESENT : self::STATUS_ABSENT;
+        } else {
+            $this->attributes['status'] = $value;
+        }
     }
 }

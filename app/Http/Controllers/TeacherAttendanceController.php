@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TeacherAttendance;
 use App\Models\Teacher;
 use App\Models\ClassRoom;
+use App\Http\Resources\TeacherAttendanceResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -64,7 +65,7 @@ class TeacherAttendanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $attendances,
+            'data' => TeacherAttendanceResource::collection($attendances),
             'message' => 'Teacher attendances retrieved successfully'
         ]);
     }
@@ -120,7 +121,7 @@ class TeacherAttendanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $attendance->load(['teacher', 'classRoom']),
+            'data' => new TeacherAttendanceResource($attendance->load(['teacher', 'classRoom'])),
             'message' => 'Teacher attendance recorded successfully'
         ], 201);
     }
@@ -142,15 +143,9 @@ class TeacherAttendanceController extends Controller
             ], 404);
         }
 
-        // Calculate duration if check-in and check-out are set
-        $durationInMinutes = $attendance->getDurationInMinutes();
-
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'attendance' => $attendance,
-                'duration_minutes' => $durationInMinutes
-            ],
+            'data' => new TeacherAttendanceResource($attendance),
             'message' => 'Teacher attendance retrieved successfully'
         ]);
     }
@@ -203,7 +198,7 @@ class TeacherAttendanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $attendance->load(['teacher', 'classRoom']),
+            'data' => new TeacherAttendanceResource($attendance->load(['teacher', 'classRoom'])),
             'message' => 'Teacher attendance updated successfully'
         ]);
     }
@@ -282,7 +277,7 @@ class TeacherAttendanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $attendance->load(['teacher', 'classRoom']),
+            'data' => new TeacherAttendanceResource($attendance->load(['teacher', 'classRoom'])),
             'message' => 'Teacher checked in successfully'
         ], 201);
     }
@@ -342,10 +337,7 @@ class TeacherAttendanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'attendance' => $attendance->load(['teacher', 'classRoom']),
-                'duration_minutes' => $durationInMinutes
-            ],
+            'data' => new TeacherAttendanceResource($attendance->load(['teacher', 'classRoom'])),
             'message' => 'Teacher checked out successfully'
         ]);
     }
@@ -368,47 +360,17 @@ class TeacherAttendanceController extends Controller
             ], 404);
         }
 
-        // Default to current month if not provided
         $startDate = $request->get('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->get('end_date', Carbon::now()->endOfMonth()->toDateString());
 
-        // Get teacher's attendance within the date range
         $attendances = TeacherAttendance::where('teacher_id', $teacherId)
             ->whereBetween('attendance_date', [$startDate, $endDate])
+            ->with(['teacher', 'classRoom'])
             ->get();
-
-        // Calculate statistics
-        $totalAttendances = $attendances->count();
-        $presentCount = $attendances->where('status', TeacherAttendance::STATUS_PRESENT)->count();
-        $absentCount = $attendances->where('status', TeacherAttendance::STATUS_ABSENT)->count();
-
-        // Calculate total hours taught (for records with both check-in and check-out)
-        $totalMinutes = 0;
-        foreach ($attendances as $attendance) {
-            $totalMinutes += $attendance->getDurationInMinutes();
-        }
-        $totalHours = round($totalMinutes / 60, 2);
-
-        // Calculate attendance rate
-        $attendanceRate = $totalAttendances > 0 ? round(($presentCount / $totalAttendances) * 100, 2) : 0;
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'teacher' => $teacher,
-                'period' => [
-                    'start_date' => $startDate,
-                    'end_date' => $endDate
-                ],
-                'statistics' => [
-                    'total_attendances' => $totalAttendances,
-                    'present_count' => $presentCount,
-                    'absent_count' => $absentCount,
-                    'attendance_rate' => $attendanceRate . '%',
-                    'total_hours' => $totalHours,
-                    'total_minutes' => $totalMinutes
-                ]
-            ],
+            'data' => TeacherAttendanceResource::collection($attendances),
             'message' => 'Teacher attendance statistics retrieved successfully'
         ]);
     }
@@ -431,47 +393,17 @@ class TeacherAttendanceController extends Controller
             ], 404);
         }
 
-        // Default to current month if not provided
         $startDate = $request->get('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->get('end_date', Carbon::now()->endOfMonth()->toDateString());
 
-        // Get all attendances for this class room within the date range
         $attendances = TeacherAttendance::where('class_rooms_id', $classRoomId)
             ->whereBetween('attendance_date', [$startDate, $endDate])
+            ->with(['teacher', 'classRoom'])
             ->get();
-
-        // Get unique teachers who taught in this class room
-        $teacherIds = $attendances->pluck('teacher_id')->unique();
-        $teacherCount = $teacherIds->count();
-
-        // Calculate statistics
-        $totalSessions = $attendances->count();
-        $completedSessions = $attendances->whereNotNull('check_out')->count();
-
-        // Calculate total class duration
-        $totalMinutes = 0;
-        foreach ($attendances as $attendance) {
-            $totalMinutes += $attendance->getDurationInMinutes();
-        }
-        $totalHours = round($totalMinutes / 60, 2);
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'class_room' => $classRoom,
-                'period' => [
-                    'start_date' => $startDate,
-                    'end_date' => $endDate
-                ],
-                'statistics' => [
-                    'teacher_count' => $teacherCount,
-                    'total_sessions' => $totalSessions,
-                    'completed_sessions' => $completedSessions,
-                    'completion_rate' => $totalSessions > 0 ? round(($completedSessions / $totalSessions) * 100, 2) . '%' : '0%',
-                    'total_hours' => $totalHours,
-                    'total_minutes' => $totalMinutes
-                ]
-            ],
+            'data' => TeacherAttendanceResource::collection($attendances),
             'message' => 'Class room attendance statistics retrieved successfully'
         ]);
     }

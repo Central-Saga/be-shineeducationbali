@@ -7,8 +7,8 @@ use App\Http\Requests\TestimonialUpdateRequest;
 use App\Http\Resources\TestimonialResource;
 use App\Services\Contracts\TestimonialServiceInterface;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
 
 class TestimonialController extends Controller
 {
@@ -81,12 +81,36 @@ class TestimonialController extends Controller
      * Remove the specified testimonial from storage.
      *
      * @param int $id
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $id): Response
+    public function destroy(int $id): \Illuminate\Http\JsonResponse
     {
-        $this->testimonialService->deleteTestimonial($id);
-        return response()->noContent();
+        try {
+            $testimonial = $this->testimonialService->getTestimonialById($id);
+            
+            if (!$testimonial) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Testimonial tidak ditemukan',
+                    'data' => null
+                ], 404);
+            }
+
+            $this->testimonialService->deleteTestimonial($id);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Testimonial berhasil dihapus',
+                'data' => null
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menghapus testimonial: ' . $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
     }
 
     /**

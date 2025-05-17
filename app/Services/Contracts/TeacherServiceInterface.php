@@ -4,7 +4,7 @@ namespace App\Services\Contracts;
 
 interface TeacherServiceInterface
 {
-        /**
+    /**
      * Mengambil semua pengajar.
      *
      * @return mixed
@@ -26,6 +26,20 @@ interface TeacherServiceInterface
      * @return mixed
      */
     public function getTeacherByName($name);
+
+    /**
+     * Mengambil semua pengajar dengan status aktif.
+     *
+     * @return mixed
+     */
+    public function getActiveTeachers();
+
+    /**
+     * Mengambil semua pengajar dengan status non-aktif.
+     *
+     * @return mixed
+     */
+    public function getInactiveTeachers();
 
     /**
      * Membuat pengajar baru.

@@ -11,6 +11,8 @@ class TeacherService implements TeacherServiceInterface
     protected $repository;
 
     const TEACHERS_ALL_CACHE_KEY = 'teachers.all';
+    const TEACHERS_ACTIVE_CACHE_KEY = 'teachers.active';
+    const TEACHERS_INACTIVE_CACHE_KEY = 'teachers.inactive';
 
     public function __construct(TeacherRepositoryInterface $repository)
     {
@@ -93,6 +95,30 @@ class TeacherService implements TeacherServiceInterface
     }
 
     /**
+     * Mengambil semua pengajar dengan status aktif.
+     *
+     * @return mixed
+     */
+    public function getActiveTeachers()
+    {
+        return Cache::remember(self::TEACHERS_ACTIVE_CACHE_KEY, 3600, function () {
+            return $this->repository->getAllTeachers()->where('status', 'Aktif');
+        });
+    }
+
+    /**
+     * Mengambil semua pengajar dengan status non-aktif.
+     *
+     * @return mixed
+     */
+    public function getInactiveTeachers()
+    {
+        return Cache::remember(self::TEACHERS_INACTIVE_CACHE_KEY, 3600, function () {
+            return $this->repository->getAllTeachers()->where('status', 'Non Aktif');
+        });
+    }
+
+    /**
      * Menghapus semua cache tipe kelas
      *
      * @return void
@@ -100,5 +126,7 @@ class TeacherService implements TeacherServiceInterface
     public function clearTeacherCaches()
     {
         Cache::forget(self::TEACHERS_ALL_CACHE_KEY);
+        Cache::forget(self::TEACHERS_ACTIVE_CACHE_KEY);
+        Cache::forget(self::TEACHERS_INACTIVE_CACHE_KEY);
     }
 }

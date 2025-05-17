@@ -44,11 +44,25 @@ interface MaterialServiceInterface
      */
     public function updateMaterial($id, array $data);
 
-    /**
+/**
      * Menghapus bahan ajar berdasarkan ID.
      *
      * @param int $id
      * @return mixed
      */
     public function deleteMaterial($id);
+
+    /**
+     * Mengambil semua bahan ajar dengan status Aktif.
+     *
+     * @return mixed
+     */
+    public function getActiveMaterials();
+
+    /**
+     * Mengambil semua bahan ajar dengan status Non Aktif.
+     *
+     * @return mixed
+     */
+    public function getInactiveMaterials();
 }

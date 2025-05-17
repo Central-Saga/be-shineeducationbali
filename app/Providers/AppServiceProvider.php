@@ -119,7 +119,7 @@ use App\Repositories\Eloquent\JobApplicationRepository;
 use App\Repositories\Contracts\JobApplicationRepositoryInterface;
 use App\Repositories\Eloquent\BankAccountRepository;
 use App\Repositories\Contracts\BankAccountRepositoryInterface;
-use App\Services\TestimonialService;
+use App\Services\Implementations\TestimonialService;
 use App\Services\Contracts\TransactionServiceInterface;
 use App\Services\Implementations\TransactionService;
 use App\Services\Contracts\TransactionDetailServiceInterface;
@@ -203,7 +203,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Binding Testimonial
         $this->app->bind(TestimonialRepositoryInterface::class, TestimonialRepository::class);
-        $this->app->bind(TestimonialServiceInterface::class, TestimonialService::class);
+        $this->app->bind(TestimonialServiceInterface::class, \App\Services\Implementations\TestimonialService::class);
 
         // Binding Bank Account
         $this->app->bind(BankAccountRepositoryInterface::class, BankAccountRepository::class);
