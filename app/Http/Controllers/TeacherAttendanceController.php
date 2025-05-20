@@ -37,9 +37,15 @@ class TeacherAttendanceController extends Controller
             $query->forDate($request->date);
         }
 
-        // Filter by status if provided
+        // Filter by status if provided (accept 0/1 or string)
         if ($request->has('status')) {
-            $query->withStatus($request->status);
+            $status = $request->status;
+            if ($status === '1' || $status === 1) {
+                $status = TeacherAttendance::STATUS_PRESENT;
+            } elseif ($status === '0' || $status === 0) {
+                $status = TeacherAttendance::STATUS_ABSENT;
+            }
+            $query->withStatus($status);
         }
 
         // Filter by present status
@@ -62,6 +68,13 @@ class TeacherAttendanceController extends Controller
         $attendances = $request->has('paginate') && $request->paginate ? 
                         $query->paginate($perPage) : 
                         $query->get();
+
+        // Log jika data kosong
+        if ($attendances->isEmpty()) {
+            \Log::info('TeacherAttendanceController@index: Data kosong', [
+                'filters' => $request->all()
+            ]);
+        }
 
         return response()->json([
             'status' => 'success',

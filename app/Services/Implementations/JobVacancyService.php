@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Implementations;
 
-use App\Repositories\JobVacancyRepositoryInterface;
+use App\Services\Contracts\JobVacancyServiceInterface;
+use App\Repositories\Contracts\JobVacancyRepositoryInterface;
 use App\Models\JobVacancyStatus;
 
 class JobVacancyService implements JobVacancyServiceInterface

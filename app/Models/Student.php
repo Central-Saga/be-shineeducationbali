@@ -122,4 +122,20 @@ class Student extends Model
     {
         return $this->hasMany(Grade::class);
     }
+
+    /**
+     * The "booted" method of the model.
+     * Handle cascading deletes for related models.
+     */
+    protected static function booted()
+    {
+        static::deleting(function ($student) {
+            $student->assignments()->delete();
+            $student->certificates()->delete();
+            $student->studentQuotas()->delete();
+            $student->studentAttendances()->delete();
+            $student->grades()->delete();
+            $student->assets()->delete();
+        });
+    }
 }

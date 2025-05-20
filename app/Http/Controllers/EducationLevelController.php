@@ -78,6 +78,6 @@ class EducationLevelController extends Controller
         if (!$deleted) {
             return response()->json(['message' => 'Gagal menghapus level pendidikan'], 400);
         }
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Berhasil menghapus level pendidikan'], 200);
     }
 }
