@@ -249,7 +249,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Job Applications
-    Route::middleware('permission:mengelola jobApplications')->group(function () {
+    Route::middleware('permission:mengelola jobapplications')->group(function () {
         Route::apiResource('job-applications', JobApplicationController::class);
         Route::patch('job-applications/{id}/status', [JobApplicationController::class, 'updateStatus']);
     });

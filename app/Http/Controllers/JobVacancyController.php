@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\JobVacancyStoreRequest;
 use App\Http\Requests\JobVacancyUpdateRequest;
 use App\Http\Resources\JobVacancyResource;
-use App\Services\JobVacancyServiceInterface;
+use App\Services\Contracts\JobVacancyServiceInterface;
 use Illuminate\Http\Request;
 
 class JobVacancyController extends Controller

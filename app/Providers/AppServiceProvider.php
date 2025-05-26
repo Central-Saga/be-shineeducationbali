@@ -11,7 +11,7 @@ use App\Repositories\Contracts\ArticleRepositoryInterface;
 use App\Repositories\Eloquent\ArticleRepository;
 use App\Repositories\Eloquent\LeaveRepository;
 use App\Services\Implementations\NotificationService;
-use App\Services\JobApplicationService;
+use App\Services\Implementations\JobApplicationService;
 use App\Services\Contracts\LeaveServiceInterface;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\NotificationRepository;
@@ -34,7 +34,7 @@ use App\Services\Implementations\ProgramService;
 use App\Services\Implementations\StudentService;
 use App\Services\Implementations\SubjectService;
 use App\Services\Implementations\TeacherService;
-use App\Services\JobApplicationServiceInterface;
+use App\Services\Contracts\JobApplicationServiceInterface;
 use App\Repositories\Eloquent\MaterialRepository;
 use App\Repositories\Eloquent\ScheduleRepository;
 use App\Services\Contracts\GradeServiceInterface;
@@ -195,12 +195,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(NotificationServiceInterface::class, NotificationService::class);
 
         // Binding Job Vacancy
-        $this->app->bind(JobVacancyRepositoryInterface::class, JobVacancyRepository::class);
-        $this->app->bind(JobVacancyServiceInterface::class, JobVacancyService::class);
+        $this->app->bind(JobVacancyRepositoryInterface::class, \App\Repositories\Eloquent\JobVacancyRepository::class);
+        $this->app->bind(JobVacancyServiceInterface::class, \App\Services\Implementations\JobVacancyService::class);
 
         // Binding JobApplication 
-        $this->app->bind(JobApplicationRepositoryInterface::class, JobApplicationRepository::class);
-        $this->app->bind(JobApplicationServiceInterface::class, JobApplicationService::class);
+        $this->app->bind(JobApplicationRepositoryInterface::class, \App\Repositories\Eloquent\JobApplicationRepository::class);
+        $this->app->bind(JobApplicationServiceInterface::class, \App\Services\Implementations\JobApplicationService::class);
 
         // Binding Testimonial
         $this->app->bind(TestimonialRepositoryInterface::class, TestimonialRepository::class);

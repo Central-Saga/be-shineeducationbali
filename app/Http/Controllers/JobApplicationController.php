@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\JobApplicationStoreRequest;
 use App\Http\Requests\JobApplicationUpdateRequest;
 use App\Http\Resources\JobApplicationResource;
-use App\Services\JobApplicationServiceInterface;
+use App\Services\Contracts\JobApplicationServiceInterface;
 use Illuminate\Http\Request;
 
 class JobApplicationController extends Controller

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Implementations;
 
-use App\Repositories\JobApplicationRepositoryInterface;
+use App\Services\Contracts\JobApplicationServiceInterface;
+use App\Repositories\Contracts\JobApplicationRepositoryInterface;
 use App\Models\JobApplicationStatus;
 
 class JobApplicationService implements JobApplicationServiceInterface
