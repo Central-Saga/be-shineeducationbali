@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\BankAccountResource;
-use App\Services\BankAccountService;
+use App\Services\Contracts\BankAccountServiceInterface;
+use App\Services\Implementations\BankAccountService;
 use Illuminate\Http\Request;
 
 class BankAccountController extends Controller
 {
     protected $bankAccountService;
 
-    public function __construct(BankAccountService $bankAccountService)
+    public function __construct(BankAccountServiceInterface $bankAccountService)
     {
         $this->bankAccountService = $bankAccountService;
     }
@@ -23,16 +24,20 @@ class BankAccountController extends Controller
         $status = $request->query('status');
 
         if ($status === null) {
-            $bankAccounts = $this->bankAccountService->getAll();
-        } elseif (strtolower($status) === 'aktif') {
-            $bankAccounts = $this->bankAccountService->getBankAccountsByStatusAktif();
-        } elseif (strtolower($status) === 'non aktif') {
-            $bankAccounts = $this->bankAccountService->getBankAccountsByStatusNonAktif();
+            $bankAccounts = $this->bankAccountService->getAllBankAccounts();
+        } elseif ($status === '1') {
+            $bankAccounts = $this->bankAccountService->getBankAccountsByStatus('Aktif');
+        } elseif ($status === '0') {
+            $bankAccounts = $this->bankAccountService->getBankAccountsByStatus('Non Aktif');
         } else {
-            return response()->json(['error' => 'Invalid status parameter'], 400);
+            return response()->json(['error' => 'Invalid status parameter. Use 1 for active or 0 for inactive accounts'], 400);
         }
 
-        return BankAccountResource::collection($bankAccounts);
+        return response()->json([
+            'success' => true,
+            'message' => 'Bank accounts retrieved successfully',
+            'data' => BankAccountResource::collection($bankAccounts)
+        ]);
     }
 
     /**
@@ -45,11 +50,19 @@ class BankAccountController extends Controller
             'account_number' => 'required|string|max:50',
             'account_holder' => 'required|string|max:100',
             'account_type' => 'required|in:Receipt,Expenditure',
-            'status' => 'required|in:Aktif,Non Aktif',
+            'status' => 'required|in:0,1',
         ]);
 
-        $bankAccount = $this->bankAccountService->create($validated);
-        return new BankAccountResource($bankAccount);
+        // Convert numeric status to Aktif/Non Aktif for database
+        $validated['status'] = $validated['status'] === '1' ? 'Aktif' : 'Non Aktif';
+
+        $bankAccount = $this->bankAccountService->createBankAccount($validated);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Bank account created successfully',
+            'data' => new BankAccountResource($bankAccount)
+        ]);
     }
 
     /**
@@ -57,7 +70,7 @@ class BankAccountController extends Controller
      */
     public function show($id)
     {
-        $bankAccount = $this->bankAccountService->getById($id);
+        $bankAccount = $this->bankAccountService->getBankAccountById($id);
         return new BankAccountResource($bankAccount);
     }
 
@@ -71,11 +84,21 @@ class BankAccountController extends Controller
             'account_number' => 'sometimes|string|max:50',
             'account_holder' => 'sometimes|string|max:100',
             'account_type' => 'sometimes|in:Receipt,Expenditure',
-            'status' => 'sometimes|in:Aktif,Non Aktif',
+            'status' => 'sometimes|in:0,1',
         ]);
 
-        $bankAccount = $this->bankAccountService->update($id, $validated);
-        return new BankAccountResource($bankAccount);
+        // Convert numeric status to Aktif/Non Aktif for database if status is being updated
+        if (isset($validated['status'])) {
+            $validated['status'] = $validated['status'] === '1' ? 'Aktif' : 'Non Aktif';
+        }
+
+        $bankAccount = $this->bankAccountService->updateBankAccount($id, $validated);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Bank account updated successfully',
+            'data' => new BankAccountResource($bankAccount)
+        ]);
     }
 
     /**
@@ -83,7 +106,7 @@ class BankAccountController extends Controller
      */
     public function destroy($id)
     {
-        $this->bankAccountService->delete($id);
+        $this->bankAccountService->deleteBankAccount($id);
         return response()->json(['message' => 'Bank account deleted successfully']);
     }
 }

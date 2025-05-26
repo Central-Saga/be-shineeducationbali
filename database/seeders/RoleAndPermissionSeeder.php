@@ -28,6 +28,7 @@ class RoleAndPermissionSeeder extends Seeder
             'users',
             'teachers',
             'students',
+            'schedules',
             'classes',
             'student classes',
             'materials',
@@ -36,7 +37,7 @@ class RoleAndPermissionSeeder extends Seeder
             'grade categories',
             'leaves',
             'certificates',
-            'bank accounts',
+            'bankaccounts',
             'transactions',
             'transaction details',
             'student quotas',
@@ -93,6 +94,7 @@ class RoleAndPermissionSeeder extends Seeder
             'mengelola articles',
             'mengelola testimonials',
             'mengelola assignments',
+            'mengelola schedules',
         ]);
 
         // For Student, assign only specific additional permissions
@@ -113,7 +115,7 @@ class RoleAndPermissionSeeder extends Seeder
             'melihat transactions',
             'melihat transaction details',
             'melihat student quotas',
-            'melihat bank accounts',
+            'melihat bankaccounts',
             'melihat certificates',
         ]);
     }

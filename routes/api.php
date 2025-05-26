@@ -261,7 +261,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Bank Accounts
-    Route::middleware('permission:mengelola bankAccounts')->group(function () {
+    Route::middleware('permission:mengelola bankaccounts')->group(function () {
         Route::apiResource('bank-accounts', BankAccountController::class);
         Route::patch('bank-accounts/{id}/status', [BankAccountController::class, 'updateStatus']);
     });

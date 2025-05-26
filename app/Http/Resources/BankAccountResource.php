@@ -20,7 +20,7 @@ class BankAccountResource extends JsonResource
             'account_number' => $this->account_number,
             'account_holder' => $this->account_holder,
             'account_type' => $this->account_type,
-            'status' => $this->status,
+            'status' => $this->status === 'Aktif' ? 'active' : 'inactive',
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
