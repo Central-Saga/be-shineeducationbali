@@ -21,7 +21,8 @@ class JobVacancyResource extends JsonResource
             'description' => $this->description,
             'salary' => $this->salary,
             'application_deadline' => $this->application_deadline->toDateString(), // Format tanggal: YYYY-MM-DD
-            'status' => $this->status,
+            'status' => $this->status === 'Open' ? '1' : '0',
+            'status_text' => $this->status === 'Open' ? 'active' : 'inactive',
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
         ];

@@ -26,15 +26,22 @@ class JobVacancyController extends Controller
 
         if ($status === null) {
             $jobVacancies = $this->jobVacancyService->getAll();
-        } elseif (strtolower($status) === 'open') {
+        } elseif ($status === '1') {
             $jobVacancies = $this->jobVacancyService->getJobVacanciesByStatusOpen();
-        } elseif (strtolower($status) === 'closed') {
+        } elseif ($status === '0') {
             $jobVacancies = $this->jobVacancyService->getJobVacanciesByStatusClosed();
         } else {
-            return response()->json(['error' => 'Invalid status parameter'], 400);
+            return response()->json([
+                'error' => 'Invalid status parameter',
+                'message' => 'Use 1 for active (open) or 0 for inactive (closed) job vacancies'
+            ], 400);
         }
 
-        return JobVacancyResource::collection($jobVacancies);
+        return response()->json([
+            'success' => true,
+            'message' => 'Job vacancies retrieved successfully',
+            'data' => JobVacancyResource::collection($jobVacancies)
+        ]);
     }
 
     /**
@@ -42,9 +49,25 @@ class JobVacancyController extends Controller
      */
     public function store(JobVacancyStoreRequest $request)
     {
-        $data = $request->validated();
-        $jobVacancy = $this->jobVacancyService->create($data);
-        return new JobVacancyResource($jobVacancy);
+        $validated = $request->validate([
+            'subject_id' => 'required|exists:subjects,id',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'salary' => 'required|numeric|min:0',
+            'application_deadline' => 'required|date|after_or_equal:today',
+            'status' => 'required|in:0,1',
+        ]);
+
+        // Convert numeric status to Open/Closed
+        $validated['status'] = $validated['status'] === '1' ? 'Open' : 'Closed';
+
+        $jobVacancy = $this->jobVacancyService->create($validated);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Job vacancy created successfully',
+            'data' => new JobVacancyResource($jobVacancy)
+        ]);
     }
 
     /**

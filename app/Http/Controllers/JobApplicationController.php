@@ -26,19 +26,26 @@ class JobApplicationController extends Controller
 
         if ($status === null) {
             $jobApplications = $this->jobApplicationService->getAll();
-        } elseif (strtolower($status) === 'pending') {
+        } elseif ($status === '0') {
             $jobApplications = $this->jobApplicationService->getJobApplicationsByStatusPending();
-        } elseif (strtolower($status) === 'reviewed') {
+        } elseif ($status === '1') {
             $jobApplications = $this->jobApplicationService->getJobApplicationsByStatusReviewed();
-        } elseif (strtolower($status) === 'accepted') {
+        } elseif ($status === '2') {
             $jobApplications = $this->jobApplicationService->getJobApplicationsByStatusAccepted();
-        } elseif (strtolower($status) === 'rejected') {
+        } elseif ($status === '3') {
             $jobApplications = $this->jobApplicationService->getJobApplicationsByStatusRejected();
         } else {
-            return response()->json(['error' => 'Invalid status parameter'], 400);
+            return response()->json([
+                'error' => 'Invalid status parameter',
+                'message' => 'Use: 0 for pending, 1 for reviewed, 2 for accepted, 3 for rejected'
+            ], 400);
         }
 
-        return JobApplicationResource::collection($jobApplications);
+        return response()->json([
+            'success' => true,
+            'message' => 'Job applications retrieved successfully',
+            'data' => JobApplicationResource::collection($jobApplications)
+        ]);
     }
 
     /**
@@ -46,9 +53,30 @@ class JobApplicationController extends Controller
      */
     public function store(JobApplicationStoreRequest $request)
     {
-        $data = $request->validated();
-        $jobApplication = $this->jobApplicationService->create($data);
-        return new JobApplicationResource($jobApplication);
+        $validated = $request->validate([
+            'vacancy_id' => 'required|exists:job_vacancies,id',
+            'user_id' => 'required|exists:users,id',
+            'application_date' => 'required|date',
+            'status' => 'required|in:0,1,2,3',
+        ]);
+
+        // Convert numeric status to string status
+        $statusMap = [
+            '0' => 'Pending',
+            '1' => 'Reviewed',
+            '2' => 'Accepted',
+            '3' => 'Rejected'
+        ];
+
+        $validated['status'] = $statusMap[$validated['status']];
+
+        $jobApplication = $this->jobApplicationService->create($validated);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Job application created successfully',
+            'data' => new JobApplicationResource($jobApplication)
+        ]);
     }
 
     /**
