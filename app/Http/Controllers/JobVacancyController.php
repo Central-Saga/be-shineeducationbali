@@ -55,10 +55,8 @@ class JobVacancyController extends Controller
             'description' => 'required|string',
             'salary' => 'required|numeric|min:0',
             'application_deadline' => 'required|date|after_or_equal:today',
-            'status' => 'required|in:0,1',
+            'status' => 'required|in:Open,Closed',
         ]);
-
-        // Convert numeric status to Open/Closed
         $validated['status'] = $validated['status'] === '1' ? 'Open' : 'Closed';
 
         $jobVacancy = $this->jobVacancyService->create($validated);
