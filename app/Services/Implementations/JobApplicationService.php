@@ -95,7 +95,10 @@ class JobApplicationService implements JobApplicationServiceInterface
      */
     public function getJobApplicationsByStatusAccepted()
     {
-        return $this->repository->getByStatus(JobApplicationStatus::Accepted->value);
+        \Log::info('Fetching applications with status Accepted: ' . JobApplicationStatus::Accepted->value);
+        $result = $this->repository->getByStatus(JobApplicationStatus::Accepted->value);
+        \Log::info('Found ' . $result->count() . ' accepted applications');
+        return $result;
     }
 
     /**
@@ -105,7 +108,10 @@ class JobApplicationService implements JobApplicationServiceInterface
      */
     public function getJobApplicationsByStatusRejected()
     {
-        return $this->repository->getByStatus(JobApplicationStatus::Rejected->value);
+        \Log::info('Fetching applications with status Rejected: ' . JobApplicationStatus::Rejected->value);
+        $result = $this->repository->getByStatus(JobApplicationStatus::Rejected->value);
+        \Log::info('Found ' . $result->count() . ' rejected applications');
+        return $result;
     }
 
     /**

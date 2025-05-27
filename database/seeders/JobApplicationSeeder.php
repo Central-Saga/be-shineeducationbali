@@ -24,13 +24,25 @@ class JobApplicationSeeder extends Seeder
             $jobVacancies = JobVacancy::factory()->count(3)->create();
         }
 
-        // Membuat 10 job applications
+        // Status yang tersedia dengan mapping angka ke string
+        $statusMap = [
+            '1' => 'Pending',
+            '2' => 'Reviewed',
+            '3' => 'Accepted',
+            '0' => 'Rejected'
+        ];
+
+        // Membuat job applications dengan status yang berbeda-beda
         foreach ($users as $user) {
             foreach ($jobVacancies as $jobVacancy) {
-                JobApplication::factory()->create([
-                    'user_id' => $user->id,
-                    'vacancy_id' => $jobVacancy->id,
-                ]);
+                foreach ($statusMap as $numericStatus => $stringStatus) {
+                    JobApplication::create([
+                        'user_id' => $user->id,
+                        'vacancy_id' => $jobVacancy->id,
+                        'application_date' => now(),
+                        'status' => $stringStatus
+                    ]);
+                }
             }
         }
     }

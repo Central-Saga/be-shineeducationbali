@@ -25,7 +25,7 @@ class JobApplicationStoreRequest extends FormRequest
             'vacancy_id' => 'required|exists:job_vacancies,id',
             'user_id' => 'required|exists:users,id',
             'application_date' => 'required|date',
-            'status' => 'required|in:Pending,Reviewed,Accepted,Rejected',
+            'status' => 'required|in:0,1,2,3',
         ];
     }
 }

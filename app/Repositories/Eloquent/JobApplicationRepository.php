@@ -60,9 +60,13 @@ class JobApplicationRepository implements JobApplicationRepositoryInterface
      */
     public function getByStatus($status): Collection
     {
-        return $this->model->with(['jobVacancy', 'user'])
+        \Log::info('Repository searching for applications with status: ' . $status);
+        $result = $this->model->with(['jobVacancy', 'user'])
             ->where('status', $status)
             ->get();
+        \Log::info('Repository found ' . $result->count() . ' applications with status ' . $status);
+        \Log::info('SQL query:', ['sql' => $this->model->where('status', $status)->toSql()]);
+        return $result;
     }
 
     /**

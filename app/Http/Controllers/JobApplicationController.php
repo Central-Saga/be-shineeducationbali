@@ -23,24 +23,33 @@ class JobApplicationController extends Controller
     public function index(Request $request)
     {
         $status = $request->query('status');
+        \Log::info('Received status parameter: ' . ($status ?? 'null'));
 
-        if ($status === null) {
-            $jobApplications = $this->jobApplicationService->getAll();
-        } elseif ($status === '0') {
-            $jobApplications = $this->jobApplicationService->getJobApplicationsByStatusPending();
-        } elseif ($status === '1') {
-            $jobApplications = $this->jobApplicationService->getJobApplicationsByStatusReviewed();
-        } elseif ($status === '2') {
-            $jobApplications = $this->jobApplicationService->getJobApplicationsByStatusAccepted();
-        } elseif ($status === '3') {
-            $jobApplications = $this->jobApplicationService->getJobApplicationsByStatusRejected();
-        } else {
+        // Validasi status hanya boleh null, '0', '1', '2', atau '3'
+        if (!is_null($status) && !in_array($status, ['0', '1', '2', '3'])) {
             return response()->json([
                 'error' => 'Invalid status parameter',
-                'message' => 'Use: 0 for pending, 1 for reviewed, 2 for accepted, 3 for rejected'
+                'message' => 'Use: 1 for pending, 2 for reviewed, 3 for accepted, 0 for rejected'
             ], 400);
         }
 
+        if ($status === null) {
+            $jobApplications = $this->jobApplicationService->getAll();
+        } elseif ($status === '1') {
+            \Log::info('Getting pending applications');
+            $jobApplications = $this->jobApplicationService->getByStatus('Pending');
+        } elseif ($status === '2') {
+            \Log::info('Getting reviewed applications');
+            $jobApplications = $this->jobApplicationService->getByStatus('Reviewed');
+        } elseif ($status === '3') {
+            \Log::info('Getting accepted applications');
+            $jobApplications = $this->jobApplicationService->getByStatus('Accepted');
+        } elseif ($status === '0') {
+            \Log::info('Getting rejected applications');
+            $jobApplications = $this->jobApplicationService->getByStatus('Rejected');
+        }
+
+        \Log::info('Found applications count: ' . $jobApplications->count());
         return response()->json([
             'success' => true,
             'message' => 'Job applications retrieved successfully',
@@ -62,10 +71,10 @@ class JobApplicationController extends Controller
 
         // Convert numeric status to string status
         $statusMap = [
-            '0' => 'Pending',
-            '1' => 'Reviewed',
-            '2' => 'Accepted',
-            '3' => 'Rejected'
+            '1' => 'Pending',
+            '2' => 'Reviewed',
+            '3' => 'Accepted',
+            '0' => 'Rejected',
         ];
 
         $validated['status'] = $statusMap[$validated['status']];
@@ -80,22 +89,53 @@ class JobApplicationController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     */
+    public function update(JobApplicationUpdateRequest $request, $id)
+    {
+        $validated = $request->validate([
+            'vacancy_id' => 'sometimes|exists:job_vacancies,id',
+            'user_id' => 'sometimes|exists:users,id',
+            'application_date' => 'sometimes|date',
+            'status' => 'sometimes|in:0,1,2,3',
+        ]);
+
+        // Convert numeric status to string status if status is being updated
+        if (isset($validated['status'])) {
+            $statusMap = [
+                '1' => 'Pending',
+                '2' => 'Reviewed',
+                '3' => 'Accepted',
+                '0' => 'Rejected',
+            ];
+            $validated['status'] = $statusMap[$validated['status']];
+        }
+
+        $jobApplication = $this->jobApplicationService->update($id, $validated);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Job application updated successfully',
+            'data' => new JobApplicationResource($jobApplication)
+        ]);
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show($id)
     {
         $jobApplication = $this->jobApplicationService->getById($id);
-        return new JobApplicationResource($jobApplication);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(JobApplicationUpdateRequest $request, $id)
-    {
-        $data = $request->validated();
-        $jobApplication = $this->jobApplicationService->update($id, $data);
-        return new JobApplicationResource($jobApplication);
+        if (!$jobApplication) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Job application not found'
+            ], 404);
+        }
+        return response()->json([
+            'success' => true,
+            'data' => new JobApplicationResource($jobApplication)
+        ]);
     }
 
     /**
@@ -103,7 +143,10 @@ class JobApplicationController extends Controller
      */
     public function destroy($id)
     {
-        $this->jobApplicationService->delete($id);
-        return response()->json(['message' => 'Job application deleted successfully'], 200);
+        $success = $this->jobApplicationService->delete($id);
+        return response()->json([
+            'success' => $success,
+            'message' => $success ? 'Job application deleted successfully' : 'Job application not found'
+        ]);
     }
 }

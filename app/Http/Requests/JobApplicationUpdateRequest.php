@@ -25,7 +25,7 @@ class JobApplicationUpdateRequest extends FormRequest
             'vacancy_id' => 'sometimes|exists:job_vacancies,id',
             'user_id' => 'sometimes|exists:users,id',
             'application_date' => 'sometimes|date',
-            'status' => 'sometimes|in:Pending,Reviewed,Accepted,Rejected',
+            'status' => 'sometimes|in:0,1,2,3',
         ];
     }
 }
