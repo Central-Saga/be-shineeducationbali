@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/gongkomo/api.shineeducationbali.com/
+    - export DEPLOYPATH=/home/shineedu/api.shineeducationbali.com/
     - /bin/cp -r * $DEPLOYPATH
