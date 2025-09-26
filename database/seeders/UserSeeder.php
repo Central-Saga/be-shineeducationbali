@@ -24,6 +24,17 @@ class UserSeeder extends Seeder
         // Remove the user from the default role
         $superAdmin->removeRole('Student');
 
+        // Create an admin user using the User factory
+        $admin = User::factory()->create([
+            'name'  => 'Admin',
+            'email' => 'admin@example.com',
+        ]);
+
+        // Assign the Admin role
+        $admin->assignRole('Admin');
+        // Remove the user from the default role
+        $admin->removeRole('Student');
+
         // Create a teacher user using the User factory
         $teacher = User::factory()->create([
             'name'  => 'Teacher',
